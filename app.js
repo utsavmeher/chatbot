@@ -17,8 +17,10 @@ const
   body_parser = require('body-parser'),
   app = express().use(body_parser.json()); // creates express http server
 
+const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
+
 // Sets server port and logs message on success
-app.listen(process.env.PORT || 1337, () => console.log('webhook is listening'));
+app.listen(process.env.PORT || 1337, () => console.log('Webhook is listening'));
 
 // Accepts POST requests at /webhook endpoint
 app.post('/webhook', (req, res) => {  
@@ -32,11 +34,19 @@ app.post('/webhook', (req, res) => {
     // Iterate over each entry - there may be multiple if batched
     body.entry.forEach(function(entry) {
 
-      // Get the webhook event. entry.messaging is an array, but 
-      // will only ever contain one event, so we get index 0
-      let webhook_event = entry.messaging[0];
-      console.log(webhook_event);
-      
+      // Gets the body of the webhook event
+    let webhook_event = entry.messaging[0];
+
+    // Get the sender PSID
+    let sender_psid = webhook_event.sender.id;
+    console.log('Sender PSID: ' + sender_psid);
+    // Check if the event is a message or postback and
+    // pass the event to the appropriate handler function
+    if (webhook_event.message) {
+      handleMessage(sender_psid, webhook_event.message);        
+    } else if (webhook_event.postback) {
+      handlePostback(sender_psid, webhook_event.postback);
+    }
     });
 
     // Return a '200 OK' response to all events
@@ -53,7 +63,7 @@ app.post('/webhook', (req, res) => {
 app.get('/webhook', (req, res) => {
   
   /** UPDATE YOUR VERIFY TOKEN **/
-  const VERIFY_TOKEN = "<YOUR_VERIFY_TOKEN>";
+  const VERIFY_TOKEN = "randomrandom";
   
   // Parse params from the webhook verification request
   let mode = req.query['hub.mode'];
@@ -76,3 +86,105 @@ app.get('/webhook', (req, res) => {
     }
   }
 });
+
+function firstEntity(nlp, name) {
+  return nlp && nlp.entities && nlp.entities[name] && nlp.entities[name][0];
+}
+
+// Handles messages events
+function handleMessage(sender_psid, received_message) {
+  let response;
+  // check greeting is here and is confident
+  const greeting = firstEntity(received_message.nlp, 'greetings');
+  const datetimenow = firstEntity(received_message.nlp, 'datetime');
+  console.log(received_message.nlp.entities['greetings']);
+  if (greeting && greeting.confidence > 0.7) {
+    response = {
+    "text" : "Hello"
+    }
+    callSendAPI(sender_psid, response);
+  } else if (datetimenow && datetimenow.confidence > 0.8) {
+    response = {
+    "text" : datetimenow.value
+    }
+    callSendAPI(sender_psid, response);
+  } else { 
+      if (received_message.text) {    
+        response = {
+          "text": `You sent the message: "${received_message.text}". Now send me a Pict!`
+        }
+      } else if (received_message.attachments) {
+          let attachment_url = received_message.attachments[0].payload.url;
+          response = {
+            "attachment": {
+              "type": "template",
+              "payload": {
+                "template_type": "generic",
+                "elements": [{
+                  "title": "Is this the right picture?",
+                  "subtitle": "Tap a button to answer.",
+                  "image_url": attachment_url,
+                  "buttons": [
+                    {
+                      "type": "postback",
+                      "title": "Yes!",
+                      "payload": "yes",
+                    },
+                    {
+                      "type": "postback",
+                      "title": "No!",
+                      "payload": "no",
+                    }
+                  ],
+                }]
+              }
+            }
+          }
+      }
+      // Send the response message
+      callSendAPI(sender_psid, response); 
+  }
+     
+}
+
+// Handles messaging_postbacks events
+function handlePostback(sender_psid, received_postback) {
+let response;
+  
+  // Get the payload for the postback
+  let payload = received_postback.payload;
+
+  // Set the response based on the postback payload
+  if (payload === 'yes') {
+    response = { "text": "Thanks!" }
+  } else if (payload === 'no') {
+    response = { "text": "Oops, try sending another image." }
+  }
+  // Send the message to acknowledge the postback
+  callSendAPI(sender_psid, response);
+}
+
+// Sends response messages via the Send API
+function callSendAPI(sender_psid, response) {
+  // Construct the message body
+  let request_body = {
+    "recipient": {
+      "id": sender_psid
+    },
+    "message": response
+  }
+  
+  // Send the HTTP request to the Messenger Platform
+  request({
+    "uri": "https://graph.facebook.com/v2.11/me/messages",
+    "qs": { "access_token": PAGE_ACCESS_TOKEN },
+    "method": "POST",
+    "json": request_body
+  }, (err, res, body) => {
+    if (!err) {
+      console.log('Message sent!');
+    } else {
+      console.error("Unable to send message:" + err);
+    }
+  }); 
+}
