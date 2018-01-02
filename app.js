@@ -97,7 +97,7 @@ function handleMessage(sender_psid, received_message) {
   console.log(received_message.text);
   return wit.message(received_message.text).then(({entities}) => {
     const intent = firstEntity(entities, 'intent');
-    const greetings = firstEntity(entities, 'wit/greetings');
+    const greetings = firstEntity(entities, 'greetings');
     console.log(intent);
     console.log(greetings);
     if (!intent) {
@@ -125,7 +125,6 @@ function handleMessage(sender_psid, received_message) {
   console.log('🤖 > Okay, Book a Room for appointment');
   callSendAPI(sender_psid, response);
   });
-  
 }
 
 // Handles messaging_postbacks events
@@ -154,15 +153,18 @@ function callSendAPI(sender_psid, response) {
     },
     "message": response
   }
-  
+
   // Send the HTTP request to the Messenger Platform
   request({
-    "uri": "https://graph.facebook.com/v2.11/me/messages",
+    "uri": "https://graph.facebook.com/v2.6/me/messages",
     "qs": { "access_token": PAGE_ACCESS_TOKEN },
     "method": "POST",
     "json": request_body
   }, (err, res, body) => {
     if (!err) {
-      console.log('Message sent!');
+      console.log('message sent!')
     } else {
-      console.error
+      console.error("Unable to send message:" + err);
+    }
+  }); 
+}
