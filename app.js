@@ -97,7 +97,9 @@ function handleMessage(sender_psid, received_message) {
   console.log(received_message.text);
   return wit.message(received_message.text).then(({entities}) => {
     const intent = firstEntity(entities, 'intent');
-    console.log(intent.value);
+    const greetings = firstEntity(entities, 'greetings');
+    console.log(intent);
+    console.log(greetings);
     if (!intent) {
       // use app data, or a previous context to decide how to fallback
       return;
