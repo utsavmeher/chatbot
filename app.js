@@ -97,7 +97,7 @@ function handleMessage(sender_psid, received_message) {
   console.log(received_message.text);
   return wit.message(received_message.text).then(({entities}) => {
     const intent = firstEntity(entities, 'intent');
-    const greetings = firstEntity(entities, 'greetings');
+    const greetings = firstEntity(entities, 'wit/greetings');
     console.log(intent);
     console.log(greetings);
     if (!intent) {
@@ -121,8 +121,8 @@ function handleMessage(sender_psid, received_message) {
         console.log(`🤖  ${intent.value}`);
         break;
     }
-  // Send the message to acknowledge the postback
-  console.log('🤖 > Okay, Book a Room for appointments');
+  // Send the me to acknowledge the postback
+  console.log('🤖 > Okay, Book a Room for appointment');
   callSendAPI(sender_psid, response);
   });
   
@@ -165,7 +165,4 @@ function callSendAPI(sender_psid, response) {
     if (!err) {
       console.log('Message sent!');
     } else {
-      console.error("Unable to send message:" + err);
-    }
-  }); 
-}
+      console.error
