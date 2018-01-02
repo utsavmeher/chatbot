@@ -18,7 +18,10 @@ const
   app = express().use(body_parser.json()); // creates express http server
 
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
+const {firstEntity, WIT_TOKEN} = require('shared');
+const Wit = require('node-wit/lib/wit');
 
+const wit = new Wit({accessToken: WIT_TOKEN});
 // Sets server port and logs message on success
 app.listen(process.env.PORT || 1337, () => console.log('Webhook is listening'));
 
@@ -87,64 +90,26 @@ app.get('/webhook', (req, res) => {
   }
 });
 
-function firstEntity(nlp, name) {
-  return nlp && nlp.entities && nlp.entities[name] && nlp.entities[name][0];
-}
-
 // Handles messages events
 function handleMessage(sender_psid, received_message) {
-  let response;
-  // check greeting is here and is confident
-  const greeting = firstEntity(received_message.nlp, 'greetings');
-  const datetimenow = firstEntity(received_message.nlp, 'datetime');
-  console.log(received_message.nlp.entities['greetings']);
-  if (greeting && greeting.confidence > 0.7) {
-    response = {
-    "text" : "Hello"
+  return wit.message(received_message).then(({entities}) => {
+    const intent = firstEntity(entities, 'intent');
+    if (!intent) {
+      // use app data, or a previous context to decide how to fallback
+      return;
     }
-    callSendAPI(sender_psid, response);
-  } else if (datetimenow && datetimenow.confidence > 0.8) {
-    response = {
-    "text" : datetimenow.value
+    switch (intent.value) {
+      case 'book':
+        console.log('🤖 > Okay, book an appointment');
+        break;
+      case 'reservation':
+        console.log('🤖 > Okay, reserve an appointments');
+        break;
+      default:
+        console.log(`🤖  ${intent.value}`);
+        break;
     }
-    callSendAPI(sender_psid, response);
-  } else { 
-      if (received_message.text) {    
-        response = {
-          "text": `You sent the message: "${received_message.text}". Now send me a Pict!`
-        }
-      } else if (received_message.attachments) {
-          let attachment_url = received_message.attachments[0].payload.url;
-          response = {
-            "attachment": {
-              "type": "template",
-              "payload": {
-                "template_type": "generic",
-                "elements": [{
-                  "title": "Is this the right picture?",
-                  "subtitle": "Tap a button to answer.",
-                  "image_url": attachment_url,
-                  "buttons": [
-                    {
-                      "type": "postback",
-                      "title": "Yes!",
-                      "payload": "yes",
-                    },
-                    {
-                      "type": "postback",
-                      "title": "No!",
-                      "payload": "no",
-                    }
-                  ],
-                }]
-              }
-            }
-          }
-      }
-      // Send the response message
-      callSendAPI(sender_psid, response); 
-  }
-     
+  });
 }
 
 // Handles messaging_postbacks events
