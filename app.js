@@ -10,19 +10,6 @@
 
 'use strict';
 
-const WIT_TOKEN = process.env.WIT_TOKEN;
-function firstEntity(entities, name) {
-  return entities &&
-    entities[name] &&
-    Array.isArray(entities[name]) &&
-    entities[name] &&
-    entities[name][0];
-}
-
-module.exports = {
-  WIT_TOKEN,
-  firstEntity,
-};
 // Imports dependencies and set up http server
 const 
   request = require('request'),
@@ -31,7 +18,7 @@ const
   app = express().use(body_parser.json()); // creates express http server
 
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
-const {firstEntity, WIT_TOKEN} = require('shared');
+const {firstEntity, WIT_TOKEN} = require('./shared.js');
 const Wit = require('node-wit/lib/wit');
 
 const wit = new Wit({accessToken: WIT_TOKEN});
@@ -56,6 +43,7 @@ app.post('/webhook', (req, res) => {
     // Get the sender PSID
     let sender_psid = webhook_event.sender.id;
     console.log('Sender PSID: ' + sender_psid);
+      console.log('Webhook Message ' + webhook_event.message);
     // Check if the event is a message or postback and
     // pass the event to the appropriate handler function
     if (webhook_event.message) {
@@ -105,8 +93,10 @@ app.get('/webhook', (req, res) => {
 
 // Handles messages events
 function handleMessage(sender_psid, received_message) {
-  return wit.message(received_message).then(({entities}) => {
+  console.log(received_message.text);
+  return wit.message(received_message.text).then(({entities}) => {
     const intent = firstEntity(entities, 'intent');
+    console.log(intent);
     if (!intent) {
       // use app data, or a previous context to decide how to fallback
       return;
