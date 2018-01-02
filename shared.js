@@ -1,4 +1,4 @@
-const WIT_TOKEN = 'R7KJQ4J3FYCO2MZZ524JXMJPCSORXGZ7' // TODO: add your wit token here
+const WIT_TOKEN = 'VB2CYR7WIRY52DV4CIYSSNYYIM6EXL7B' // TODO: add your wit token here
 
 function firstEntity(entities, name) {
   return entities &&
