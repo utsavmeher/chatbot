@@ -43,7 +43,7 @@ app.post('/webhook', (req, res) => {
     // Get the sender PSID
     let sender_psid = webhook_event.sender.id;
     console.log('Sender PSID: ' + sender_psid);
-      console.log('Webhook Message ' + webhook_event.message);
+    console.log('Webhook Message ' + webhook_event.message);
     // Check if the event is a message or postback and
     // pass the event to the appropriate handler function
     if (webhook_event.message) {
@@ -93,10 +93,10 @@ app.get('/webhook', (req, res) => {
 
 // Handles messages events
 function handleMessage(sender_psid, received_message) {
+  let response;
   console.log(received_message.text);
   return wit.message(received_message.text).then(({entities}) => {
     const intent = firstEntity(entities, 'intent');
-    console.log(intent);
     if (!intent) {
       // use app data, or a previous context to decide how to fallback
       return;
@@ -104,15 +104,25 @@ function handleMessage(sender_psid, received_message) {
     switch (intent.value) {
       case 'book':
         console.log('🤖 > Okay, book an appointment');
+        response = { "text": "Okay, book an appointment" };
         break;
       case 'reservation':
         console.log('🤖 > Okay, reserve an appointments');
+        response = { "text": "Okay, reserve an appointment" };
+        break;
+      case 'room':
+        console.log('🤖 > Okay, Book a Room for appointments');
+        response = { "text": "Okay, Book a Room for appointments" };
         break;
       default:
         console.log(`🤖  ${intent.value}`);
         break;
     }
+  // Send the message to acknowledge the postback
+  console.log('🤖 > Okay, Book a Room for appointments');
+  callSendAPI(sender_psid, response);
   });
+  
 }
 
 // Handles messaging_postbacks events
