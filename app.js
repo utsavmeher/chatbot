@@ -88,7 +88,7 @@ function handleMessage(sender_psid, received_message) {
     console.log(intent);
     console.log(greetings);
     if (!intent) {
-      response = { "text": "Sorry I couldn't understand your message." };
+      response = { "text": "Sorry I didn't get you." };
     } else {
     switch (intent.value) {
       case 'book':
