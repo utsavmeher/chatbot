@@ -97,7 +97,7 @@ function handleMessage(sender_psid, received_message) {
         break;
       case 'reservation':
         console.log('Okay, reserve an appointments');
-        response = { "text": "Okay, reserve an appointment {{user_first_name}}" };
+        response = { "text": "Okay, reserve an appointment"};
         break;
       case 'room':
         console.log('Okay, Book a Room for appointments');
