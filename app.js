@@ -102,8 +102,8 @@ function handleMessage(sender_psid, received_message) {
     console.log(greetings);
     if (!intent) {
       response = { "text": "Sorry I didn't get you." };
-      return;
-    }
+      // return;
+    } else {
     switch (intent.value) {
       case 'book':
         console.log('Okay, book an appointment');
