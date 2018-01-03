@@ -121,6 +121,7 @@ function handleMessage(sender_psid, received_message) {
         console.log(`${intent.value}`);
         break;
     }
+    }
   callSendAPI(sender_psid, response);
   });
 }
