@@ -101,28 +101,26 @@ function handleMessage(sender_psid, received_message) {
     console.log(intent);
     console.log(greetings);
     if (!intent) {
-      // use app data, or a previous context to decide how to fallback
+      response = { "text": "Sorry I didn't get you." };
       return;
     }
     switch (intent.value) {
       case 'book':
-        console.log('🤖 > Okay, book an appointment');
+        console.log('Okay, book an appointment');
         response = { "text": "Okay, book an appointment" };
         break;
       case 'reservation':
-        console.log('🤖 > Okay, reserve an appointments');
+        console.log('Okay, reserve an appointments');
         response = { "text": "Okay, reserve an appointment" };
         break;
       case 'room':
-        console.log('🤖 > Okay, Book a Room for appointments');
+        console.log('Okay, Book a Room for appointments');
         response = { "text": "Okay, Book a Room for appointments" };
         break;
       default:
-        console.log(`🤖  ${intent.value}`);
+        console.log(`${intent.value}`);
         break;
     }
-  // Send the me to acknowledge the postback
-  console.log('🤖 > Okay, Book a Room for appointment');
   callSendAPI(sender_psid, response);
   });
 }
@@ -144,10 +142,11 @@ let response;
   callSendAPI(sender_psid, response);
 }
 
-// Sends response messages via the Send API
+// Sends response messages to facebook via the Send API
 function callSendAPI(sender_psid, response) {
   // Construct the message body
   let request_body = {
+    "messaging_type": "RESPONSE",
     "recipient": {
       "id": sender_psid
     },
@@ -156,13 +155,13 @@ function callSendAPI(sender_psid, response) {
 
   // Send the HTTP request to the Messenger Platform
   request({
-    "uri": "https://graph.facebook.com/v2.6/me/messages",
+    "uri": "https://graph.facebook.com/v2.11/me/messages",
     "qs": { "access_token": PAGE_ACCESS_TOKEN },
     "method": "POST",
     "json": request_body
   }, (err, res, body) => {
     if (!err) {
-      console.log('message sent!')
+      console.log('Message Sent!')
     } else {
       console.error("Unable to send message:" + err);
     }
