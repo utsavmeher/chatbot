@@ -103,7 +103,7 @@ function handleMessage(sender_psid, received_message) {
         break;
       }
     } else if(greetings){
-      response = { "text":"Hello {{user_first_name}}!"};
+      response = { "text":"Hello"};
     }
   callSendAPI(sender_psid, response);
   });
@@ -136,7 +136,6 @@ function callSendAPI(sender_psid, response) {
     },
     "message": response
   }
-
   // Send the HTTP request to the Messenger Platform
   request({
     "uri": "https://graph.facebook.com/v2.11/me/messages",
