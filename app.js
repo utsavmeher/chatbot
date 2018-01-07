@@ -103,7 +103,7 @@ function handleMessage(sender_psid, received_message) {
         break;
       }
     } else if(greetings){
-      response = { "text": "Hello"};
+      response = { "text":"Hello {{user_first_name}}!"};
     }
   callSendAPI(sender_psid, response);
   });
