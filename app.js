@@ -90,10 +90,9 @@ function handleMessage(sender_psid, received_message) {
     const greetings = firstEntity(entities, 'greetings');
     console.log(intent);
     console.log(greetings);
-    if (!intent) {
-      response = { "text": "Sorry I didn't get you." };
-    } else {
-    switch (intent.value) {
+    if()
+    if(intent){
+      switch (intent.value) {
       case 'book':
         console.log('Okay, book an appointment');
         response = { "text": "Okay, book an appointment" };
@@ -110,6 +109,12 @@ function handleMessage(sender_psid, received_message) {
         console.log(`${intent.value}`);
         break;
       }
+    }
+    if(greetings){
+      
+    }
+    if (!intent && !greetings) {
+      response = { "text": "Sorry I didn't get you." };
     }
   callSendAPI(sender_psid, response);
   });
