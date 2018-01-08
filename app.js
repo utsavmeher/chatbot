@@ -42,6 +42,7 @@ app.post('/webhook', (req, res) => {
     let sender_psid = webhook_event.sender.id;
     console.log('Sender PSID: ' + sender_psid);
     console.log('Webhook Message ' + webhook_event.message);
+    console.log(webhook_event.message);
     // Check if the event is a message or postback and
     // pass the event to the appropriate handler function
     if (webhook_event.message) {
@@ -88,6 +89,8 @@ function handleMessage(sender_psid, received_message) {
   return wit.message(received_message.text).then(({entities}) => {
     const intent = firstEntity(entities, 'intent');
     const greetings = firstEntity(entities, 'greetings');
+    const location = firstEntity(entities, 'location');
+    console.log(location);
     console.log(intent);
     console.log(greetings);
     if(!intent && !greetings){
