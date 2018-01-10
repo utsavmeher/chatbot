@@ -153,3 +153,30 @@ function callSendAPI(sender_psid, response) {
     }
   }); 
 }
+
+// Sends response messages to facebook via the Send API
+function getStarted() {
+  let request_body = {
+      "setting_type": "call_to_actions",
+      "thread_state": "new_thread",
+      "call_to_actions": [
+        {
+          "payload": "Start"
+        }
+      ]
+    }
+  // Send the HTTP request to the Messenger Platform
+  request({
+    "uri": "https://graph.facebook.com/v2.6/me/thread_settings",
+    "qs": { "access_token": PAGE_ACCESS_TOKEN },
+    "method": "POST",
+    "json": request_body
+  }, (err, res, body) => {
+    if (!err) {
+      console.log('Get Started');
+    } else {
+      console.error("Unable to send message:" + err);
+    }
+  }); 
+}
+getStarted();
