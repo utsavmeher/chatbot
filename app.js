@@ -71,8 +71,10 @@ function handleMessage(event) {
   var timeOfMessage = event.timestamp;
   var message = event.message;
   let response;
-  console.log('Message text: ' + message.text);
-  return wit.message(message.text).then(({entities}) => {
+  console.log(JSON.stringify(message));
+  var messageText = message.text;
+  var messageAttachments = message.attachments;
+  return wit.message(messageText).then(({entities}) => {
     const intent = firstEntity(entities, 'intent');
     const greetings = firstEntity(entities, 'greetings');
     const location = firstEntity(entities, 'location');
