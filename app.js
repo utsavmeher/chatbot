@@ -47,9 +47,13 @@ app.post('/webhook', (req, res) => {
         // Iterate over each entry
         // There may be multiple if batched
         data.entry.forEach(function (pageEntry) {
-
-            // Iterate over each messaging event
-            pageEntry.messaging.forEach(function (messagingEvent) {
+           console.log('PageEntry:');
+           console.log(pageEntry);
+              if(pageEntry.messaging){
+          
+              let messagingEvent = pageEntry.messaging[0];
+              console.log('Messaging Event:');
+              console.log(messagingEvent.postback.payload == 'Start');
                 if (messagingEvent.message) {
                     handleMessage(messagingEvent);
                 } else if (messagingEvent.postback) {
@@ -57,7 +61,7 @@ app.post('/webhook', (req, res) => {
                 } else {
                     console.log("Webhook received unknown messagingEvent: ", messagingEvent);
                 }
-            });
+              }
         });
 
         res.sendStatus(200);
