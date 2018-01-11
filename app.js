@@ -42,16 +42,20 @@ app.get('/webhook', (req, res) => {
 app.post('/webhook', (req, res) => {
   let body = req.body;
   if (body.object === 'page') {
+    
     // Iterate over each entry - there may be multiple if batched
     body.entry.forEach(function(pageEntry) {
-      console.log('Inside pageEntry');
-      pageEntry.messaging[
-      console.log(webhook_event);
-      if (webhook_event.message) {
-        handleMessage(webhook_event);        
-      } else if (webhook_event.postback) {
-        handlePostback(webhook_event);
-      }
+    console.log('Inside pageEntry');
+    let webhook_event = pageEntry.messaging[0];
+    // Get the sender PSID
+    let sender_psid = webhook_event.sender.id;
+    console.log('Sender PSID: ' + sender_psid);
+    console.log(webhook_event);
+    if (webhook_event.message) {
+      handleMessage(sender_psid, webhook_event.message);        
+    } else if (webhook_event.postback) {
+      handlePostback(sender_psid, webhook_event.postback);
+    }
     });
     res.status(200).send('EVENT_RECEIVED');
   } else {
@@ -60,9 +64,7 @@ app.post('/webhook', (req, res) => {
 });
 
 // Handles messages events
-function handleMessage(received_message) {
-  let sender_psid = received_message.sender.id;
-  console.log('Sender PSID: ' + sender_psid);
+function handleMessage(sender_psid, received_message) {
   let response;
   console.log(received_message.text);
   return wit.message(received_message.text).then(({entities}) => {
