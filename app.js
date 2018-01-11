@@ -1,13 +1,3 @@
-/*
- * Starter Project for Messenger Platform Quick Start Tutorial
- *
- * Remix this as the starting point for following the Messenger Platform
- * quick start tutorial.
- *
- * https://developers.facebook.com/docs/messenger-platform/getting-started/quick-start/
- *
- */
-
 'use strict';
 
 // Imports dependencies and set up http server
@@ -22,39 +12,9 @@ const {firstEntity, WIT_TOKEN} = require('./shared.js');
 const Wit = require('node-wit/lib/wit');
 
 const wit = new Wit({accessToken: WIT_TOKEN});
+
 // Sets server port and logs message on success
 app.listen(process.env.PORT || 1337, () => console.log('Webhook is listening'));
-
-// Accepts POST requests at /webhook endpoint
-app.post('/webhook', (req, res) => {
-  let body = req.body;
-  
-  // Check the webhook event is from a Page subscription
-  if (body.object === 'page') {
-    
-    // Iterate over each entry - there may be multiple if batched
-    body.entry.forEach(function(pageEntry) {
-    
-    console.log(pageEntry);
-    // Gets the body of the webhook event
-    let webhook_event = pageEntry.messaging[0];
-    
-    // Get the sender PSID
-    let sender_psid = webhook_event.sender.id;
-    console.log('Sender PSID: ' + sender_psid);
-    console.log('Webhook Message ' + webhook_event.message);
-    console.log(webhook_event.message);
-    if (webhook_event.message) {
-      handleMessage(sender_psid, webhook_event.message);        
-    } else if (webhook_event.postback) {
-      handlePostback(sender_psid, webhook_event.postback);
-    }
-    });
-    res.status(200).send('EVENT_RECEIVED');
-  } else {
-    res.sendStatus(404);
-  }
-});
 
 // Accepts GET requests at the /webhook endpoint
 app.get('/webhook', (req, res) => {
@@ -78,9 +38,31 @@ app.get('/webhook', (req, res) => {
     }
   }
 });
+// Accepts POST requests at /webhook endpoint
+app.post('/webhook', (req, res) => {
+  let body = req.body;
+  if (body.object === 'page') {
+    // Iterate over each entry - there may be multiple if batched
+    body.entry.forEach(function(pageEntry) {
+      console.log('Inside pageEntry');
+      pageEntry.messaging[
+      console.log(webhook_event);
+      if (webhook_event.message) {
+        handleMessage(webhook_event);        
+      } else if (webhook_event.postback) {
+        handlePostback(webhook_event);
+      }
+    });
+    res.status(200).send('EVENT_RECEIVED');
+  } else {
+    res.sendStatus(404);
+  }
+});
 
 // Handles messages events
-function handleMessage(sender_psid, received_message) {
+function handleMessage(received_message) {
+  let sender_psid = received_message.sender.id;
+  console.log('Sender PSID: ' + sender_psid);
   let response;
   console.log(received_message.text);
   return wit.message(received_message.text).then(({entities}) => {
