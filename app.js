@@ -147,7 +147,7 @@ function callSendAPI(sender_psid, response) {
 }
 
 
-// Sends response messages to facebook via the Send API
+// //Sends response messages to facebook via the Send API
 // function getStarted() {
 //   let request_body = {
 //       "setting_type": "call_to_actions",
@@ -166,13 +166,13 @@ function callSendAPI(sender_psid, response) {
 //     "json": request_body
 //   }, (err, res, body) => {
 //     if (!err) {
-//       console.log('Get Started');
+//       console.log('Get Started Utsav');
 //     } else {
 //       console.error("Unable to send message:" + err);
 //     }
 //   }); 
 // }
-//getStarted();
+// getStarted();
 
 // Sends response messages to facebook via the Send API
 // function greeting() {
