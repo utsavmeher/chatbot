@@ -70,7 +70,8 @@ function handleMessage(event) {
   var recipientID = event.recipient.id;
   var timeOfMessage = event.timestamp;
   var message = event.message;
-  console.log('handleMessage message' + message);
+  console.log('handleMessage event' + event);
+  console.log(event);
   let response;
   console.log(JSON.stringify(message));
   var messageText = message.text;
@@ -107,7 +108,8 @@ function handlePostback(event) {
   var recipientID = event.recipient.id;
   var timeOfMessage = event.timestamp;
   var message = event.message;
-  console.log('handlePostback message' + message);
+  console.log('handlePostback event' + event);
+  console.log(event);
   let response;
 
   // Get the payload for the postback
