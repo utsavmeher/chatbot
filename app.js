@@ -155,7 +155,7 @@ function getStarted() {
   let request_body = {
        "get_started":[
             {
-            "payload":"get_started_utsav"
+            "payload":"Started"
             }
         ]
     }
