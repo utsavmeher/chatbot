@@ -70,6 +70,7 @@ function handleMessage(event) {
   var recipientID = event.recipient.id;
   var timeOfMessage = event.timestamp;
   var message = event.message;
+  console.log('handleMessage message' + message);
   let response;
   console.log(JSON.stringify(message));
   var messageText = message.text;
@@ -106,6 +107,7 @@ function handlePostback(event) {
   var recipientID = event.recipient.id;
   var timeOfMessage = event.timestamp;
   var message = event.message;
+  console.log('handlePostback message' + message);
   let response;
 
   // Get the payload for the postback
@@ -139,13 +141,37 @@ function callSendAPI(sender_psid, response) {
     "json": request_body
   }, (err, res, body) => {
     if (!err) {
-      console.log('Message Sent!')
+      console.log('Message Sent!');
     } else {
       console.error("Unable to send message:" + err);
     }
   });
 }
 
+//Sends response messages to facebook via the Send API
+function getStarted() {
+  let request_body = {
+       "get_started":[
+            {
+            "payload":"get_started_utsav"
+            }
+        ]
+    }
+  // Send the HTTP request to the Messenger Platform
+  request({
+    "uri": "https://graph.facebook.com/v2.11/me/messenger_profile",
+    "qs": { "access_token": PAGE_ACCESS_TOKEN },
+    "method": "POST",
+    "json": request_body
+  }, (err, res, body) => {
+    if (!err) {
+      console.log('Get Started Utsav');
+    } else {
+      console.error("Unable to send message:" + err);
+    }
+  }); 
+}
+getStarted();
 
 // //Sends response messages to facebook via the Send API
 // function getStarted() {
