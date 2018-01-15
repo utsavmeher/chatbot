@@ -1,17 +1,17 @@
 'use strict';
 
 // Imports dependencies and set up http server
-const 
+const
   request = require('request'),
   express = require('express'),
   body_parser = require('body-parser'),
   app = express().use(body_parser.json()); // creates express http server
 
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
-const {firstEntity, WIT_TOKEN} = require('./shared.js');
+const { firstEntity, WIT_TOKEN } = require('./shared.js');
 const Wit = require('node-wit/lib/wit');
 
-const wit = new Wit({accessToken: WIT_TOKEN});
+const wit = new Wit({ accessToken: WIT_TOKEN });
 
 // Sets server port and logs message on success
 app.listen(process.env.PORT || 1337, () => console.log('Webhook is listening'));
@@ -24,7 +24,7 @@ app.get('/webhook', (req, res) => {
   let mode = req.query['hub.mode'];
   let token = req.query['hub.verify_token'];
   let challenge = req.query['hub.challenge'];
-    
+
   // Check if a token and mode were sent
   if (mode && token) {
     // Check the mode and token sent are correct
@@ -34,34 +34,34 @@ app.get('/webhook', (req, res) => {
       res.status(200).send(challenge);
     } else {
       // Responds with '403 Forbidden' if verify tokens do not match
-      res.sendStatus(403);      
+      res.sendStatus(403);
     }
   }
 });
 // Accepts POST requests at /webhook endpoint
 app.post('/webhook', (req, res) => {
   var data = req.body;
-    // Make sure this is a page subscription
-    if (data.object == 'page') {
-        // Iterate over each entry
-        // There may be multiple if batched
-        data.entry.forEach(function (pageEntry) {
-           console.log('PageEntry:');
-           console.log(pageEntry);
-              if(pageEntry.messaging){
-              let messagingEvent = pageEntry.messaging[0];
-              console.log('Messaging Event:');
-                if (messagingEvent.message) {
-                    handleMessage(messagingEvent);
-                } else if (messagingEvent.postback) {
-                    handlePostback(messagingEvent);
-                } else {
-                    console.log("Webhook received unknown messagingEvent: ", messagingEvent);
-                }
-              }
-        });
-        res.sendStatus(200);
-    }
+  // Make sure this is a page subscription
+  if (data.object == 'page') {
+    // Iterate over each entry
+    // There may be multiple if batched
+    data.entry.forEach(function (pageEntry) {
+      console.log('PageEntry:');
+      console.log(pageEntry);
+      if (pageEntry.messaging) {
+        let messagingEvent = pageEntry.messaging[0];
+        console.log('Messaging Event:');
+        if (messagingEvent.message) {
+          handleMessage(messagingEvent);
+        } else if (messagingEvent.postback) {
+          handlePostback(messagingEvent);
+        } else {
+          console.log("Webhook received unknown messagingEvent: ", messagingEvent);
+        }
+      }
+    });
+    res.sendStatus(200);
+  }
 });
 
 // Handles messages events
@@ -74,29 +74,29 @@ function handleMessage(event) {
   console.log(JSON.stringify(message));
   var messageText = message.text;
   var messageAttachments = message.attachments;
-  return wit.message(messageText).then(({entities}) => {
+  return wit.message(messageText).then(({ entities }) => {
     const intent = firstEntity(entities, 'intent');
     const greetings = firstEntity(entities, 'greetings');
     const location = firstEntity(entities, 'location');
     console.log(location);
     console.log(intent);
     console.log(greetings);
-    if(!intent && !greetings){
+    if (!intent && !greetings) {
       response = { "text": "Sorry I didn't get you." };
-    } else if(intent){
+    } else if (intent) {
       switch (intent.value) {
-      case 'reservation':
-        console.log('Okay, reserve a Hotel Near by.');
-        response = { "text": "Okay, reserve a Hotel Near by."};
-        break;
-      default:
-        console.log(`${intent.value}`);
-        break;
+        case 'reservation':
+          console.log('Okay, reserve a Hotel Near by.');
+          response = { "text": "Okay, reserve a Hotel Near by." };
+          break;
+        default:
+          console.log(`${intent.value}`);
+          break;
       }
-    } else if(greetings){
-      response = { "text":"Hello"};
+    } else if (greetings) {
+      response = { "text": "Hello" };
     }
-  callSendAPI(senderID, response);
+    callSendAPI(senderID, response);
   });
 }
 
@@ -107,7 +107,7 @@ function handlePostback(event) {
   var timeOfMessage = event.timestamp;
   var message = event.message;
   let response;
-  
+
   // Get the payload for the postback
   let payload = event.payload;
 
@@ -143,7 +143,7 @@ function callSendAPI(sender_psid, response) {
     } else {
       console.error("Unable to send message:" + err);
     }
-  }); 
+  });
 }
 
 
