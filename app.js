@@ -80,21 +80,22 @@ app.post('/webhook', function (req, res) {
                     console.log("ActiveUsers:");
                     console.log(activeUsers);
                       if (messagingEvent.message) {
-                        handleMessage(messagingEvent);
+                        handleMessage(messagingEvent, userObj);
                       } else if (messagingEvent.postback) {
-                        handlePostback(messagingEvent);
+                        handlePostback(messagingEvent, userObj);
                       } else {
                         console.log("Webhook received unknown messagingEvent:", messagingEvent);
                       }
                 }
 				});
         } else {
-        if (messagingEvent.message) {
-          handleMessage(messagingEvent);
-        } else if (messagingEvent.postback) {
-          handlePostback(messagingEvent);
-        } else {
-          console.log("Webhook received unknown messagingEvent:", messagingEvent);
+          if (messagingEvent.message) {
+            handleMessage(messagingEvent, userObj);
+          } else if (messagingEvent.postback) {
+            handlePostback(messagingEvent, userObj);
+          } else {
+            console.log("Webhook received unknown messagingEvent:", messagingEvent);
+          }
         }
       });
     });
@@ -108,7 +109,7 @@ let tempQuestion = '';
 let first_name = '';
 let changeSearchFlag = false;
 // Handles messages events
-function handleMessage(event) {
+function handleMessage(event, userObj) {
   console.log('handleMessage event');
   var senderID = event.sender.id;
   var recipientID = event.recipient.id;
@@ -123,18 +124,18 @@ function handleMessage(event) {
   console.log(messageAttachments);
   if (messageAttachments) {
     if (messageAttachments[0].payload.coordinates) {
-      getUserCity(senderID, messageAttachments[0].payload.coordinates.lat, messageAttachments[0].payload.coordinates.long);
+      getUserCity(userObj.userId, messageAttachments[0].payload.coordinates.lat, messageAttachments[0].payload.coordinates.long);
     }
   } else if(messageText == "Future date"){
     response = { "text": "Please enter a future date." };
     tempQuestion = 'getDate';
-    callSendAPI(senderID, response);
+    callSendAPI(userObj.userId, response);
   } else if (messageText == "Start Over") {
     changeSearchFlag = false;
     reservationObject = {};
-    callSendAPIFirstName(senderID, response);
+    callSendAPIFirstName(userObj.userId, response);
   } else {
-    callTypingOn(senderID);
+    callTypingOn(userObj.userId);
     console.log("messege text before wit" + messageText);
     wit.message(messageText).then(({ entities }) => {
       console.log('Wit Response');
@@ -146,8 +147,8 @@ function handleMessage(event) {
         reservationObject["datetime"] = entities.datetime[0].value;
         formatCheckInCheckOut(reservationObject.datetime, reservationObject.nights);
         response = getShowResults();
-        callSendAPI(senderID, response);
-        response = getHotelListFromText(senderID);
+        callSendAPI(userObj.userId, response);
+        response = getHotelListFromText(userObj.userId);
         console.log(reservationObject);
       } else {
         const intent = firstEntity(entities, 'intent');
@@ -161,7 +162,7 @@ function handleMessage(event) {
           tempQuestion = 'getLocation';
           console.log('tempQuestion = getLocation');
         } else if (tempQuestion == 'getLocation' && location && location.confidence > 0.87) {
-          getUserCityFromUserInput(senderID, location.value);
+          getUserCityFromUserInput(userObj.userId, location.value);
         } else if (tempQuestion == 'getDate' && datetime && datetime.confidence > 0.9) {
           response = { "text": CONFIG.keyMapped['guests'] };
           console.log("Inside getdate condition " + datetime.value)
@@ -180,9 +181,9 @@ function handleMessage(event) {
             reservationObject["nights"] = number.value;
             formatCheckInCheckOut(reservationObject.datetime, reservationObject.nights);
             response = getShowResults();
-            callSendAPI(senderID, response);
+            callSendAPI(userObj.userId, response);
             console.log(reservationObject);
-            response = getHotelListFromText(senderID);
+            response = getHotelListFromText(userObj.userId);
             tempStore = '';
             tempQuestion = '';
             console.log('tempQuestion = EMPTY');
@@ -191,12 +192,12 @@ function handleMessage(event) {
           response = { "text": CONFIG.keyMapped['sorry'] };
         }
       }
-      callSendAPI(senderID, response);
+      callSendAPI(userObj.userId, response);
     });
   }
 }
 // Handles messaging_postbacks events
-function handlePostback(event) {
+function handlePostback(event, userObj) {
   var senderID = event.sender.id;
   var recipientID = event.recipient.id;
   var timeOfMessage = event.timestamp;
