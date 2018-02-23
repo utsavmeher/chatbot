@@ -23,7 +23,7 @@ var questionsList = [];
 var activeUsers = [];
 let reservationObject = {};
 let tempStore = '';
-let tempQuestion = '';
+// let tempQuestion = '';
 let first_name = '';
 let changeSearchFlag = false;
 
@@ -131,7 +131,7 @@ function handleMessage(event, userObj) {
   } else if (messageText == "Start Over") {
     changeSearchFlag = false;
     reservationObject = {};
-    callSendAPIFirstName(userObj.userId, response);
+    callSendAPIFirstName(userObj, response);
   } else {
     callTypingOn(userObj.userId);
     console.log("messege text before wit" + messageText);
@@ -156,11 +156,11 @@ function handleMessage(event, userObj) {
         const datetime = firstEntity(entities, 'datetime');
         console.log('changeSearchFlag: ' + changeSearchFlag);
         if (greetings && greetings.confidence > 0.9) {
-          response = { "text": "Hello " + first_name + "," + CONFIG.keyMapped['welcome'] + ' ' + CONFIG.keyMapped['location'] };
+          response = { "text": "Hello " + userObj.profile.first_name + "," + CONFIG.keyMapped['welcome'] + ' ' + CONFIG.keyMapped['location'] };
           userObj.tempQuestion = 'getLocation';
           console.log('tempQuestion = getLocation');
         } else if (userObj.tempQuestion == 'getLocation' && location && location.confidence > 0.87) {
-          getUserCityFromUserInput(userObj.userId, location.value);
+          getUserCityFromUserInput(userObj, location.value);
         } else if (userObj.tempQuestion == 'getDate' && datetime && datetime.confidence > 0.9) {
           response = { "text": CONFIG.keyMapped['guests'] };
           console.log("Inside getdate condition " + datetime.value)
@@ -209,13 +209,13 @@ function handlePostback(event, userObj) {
   if (event.postback.payload === 'Start') {
     changeSearchFlag = false;
     reservationObject = {};
-    callSendAPIFirstName(userObj.userId, response);
+    callSendAPIFirstName(userObj, response);
   } else if (event.postback.payload === 'find_hotels' || event.postback.payload === 'change_search') {
     if (event.postback.payload === 'change_search') {
       changeSearchFlag = true;
     }
     // reservationObject = {};
-    callSendAPILocation(userObj.userId, response);
+    callSendAPILocation(userObj, response);
   } else if (event.postback.payload == 'did_you_know') {
     let response = {
       "text": CONFIG.keyMapped['didYouKnow'],
@@ -262,8 +262,7 @@ function convertDateFormat(inputDate) {
 }
 
 // Sends Location response to facebook via the Send API
-function callSendAPILocation(sender_psid, response, endpoint, method) {
-  
+function callSendAPILocation(userObj, response, endpoint, method) {
   endpoint = endpoint || 'messages';
   method = method || 'POST';
   if (changeSearchFlag) {
@@ -286,12 +285,12 @@ function callSendAPILocation(sender_psid, response, endpoint, method) {
       ]
     }
   }
-  tempQuestion = 'getLocation';
+  userObj.tempQuestion = 'getLocation';
   console.log('tempQuestion = getLocation');
   let request_body = {
     "messaging_type": "RESPONSE",
     "recipient": {
-      "id": sender_psid
+      "id": userObj.userId
     },
     "message": response
   };
@@ -311,7 +310,7 @@ function callSendAPILocation(sender_psid, response, endpoint, method) {
 }
 
 // Sends Quick Reples response to facebook via the Send API
-function getDateQuickReplies() {
+function getDateQuickReplies(userObj) {
   let state = reservationObject.locationState ? ', ' + reservationObject.locationState : "";
   let response = {
     "text": CONFIG.keyMapped['location1'] + reservationObject.location + state + "\n" + CONFIG.keyMapped['date'],
@@ -333,23 +332,23 @@ function getDateQuickReplies() {
       }
     ]
   };
-  tempQuestion = 'getDate';
+  userObj.tempQuestion = 'getDate';
   console.log('tempQuestion = getLocation');
   return response;
 }
 
 // Get the first name and Shows the First Greeting Msg to the User
-function callSendAPIFirstName(sender_psid, response) {
+function callSendAPIFirstName(userObj, response) {
   let request_body = {
     "messaging_type": "RESPONSE",
     "recipient": {
-      "id": sender_psid
+      "id": userObj.userId
     },
     "message": response
   };
   // Send the HTTP request to the Messenger Platform
   request({
-    "uri": 'https://graph.facebook.com/v2.11/' + sender_psid,
+    "uri": 'https://graph.facebook.com/v2.11/' + userObj.userId,
     "qs": { "access_token": PAGE_ACCESS_TOKEN, fields: 'first_name' },
     "method": "GET",
     "json": request_body
@@ -363,7 +362,7 @@ function callSendAPIFirstName(sender_psid, response) {
           "payload": {
             "template_type": "generic",
             "elements": [{
-              "title": "Hello " + first_name + "! " + CONFIG.keyMapped['welcome'],
+              "title": "Hello " + userObj.profile.first_name + "! " + CONFIG.keyMapped['welcome'],
               "subtitle": "Tap on Find Hotels to book a reservation.",
               "image_url": "https://cdn.glitch.com/c6c2dc22-89f9-4d15-a9bb-9d07a31dec01%2Fihg.png?1516965115124",
               "buttons": [
@@ -383,12 +382,12 @@ function callSendAPIFirstName(sender_psid, response) {
           }
         }
       };
-      tempQuestion = 'getStarted';
+      userObj.tempQuestion = 'getStarted';
       console.log('tempQuestion = getStarted');
     } else {
       console.error("callSendAPIFirstName Unable to send message:" + err);
     }
-    callSendAPI(sender_psid, response);
+    callSendAPI(userObj.userId, response);
   });
 }
 
@@ -471,7 +470,7 @@ function greeting() {
 
 
 //Get User City from Lat and Long
-function getUserCity(senderID, lat, long) {
+function getUserCity(userObj, lat, long) {
   request({
     "uri": "https://maps.googleapis.com/maps/api/geocode/json",
     "qs": { "key": ENV.config['GOOGLE_API_KEY'], "sensor": false, "latlng": '' + lat + ',' + long },
@@ -487,11 +486,11 @@ function getUserCity(senderID, lat, long) {
       console.log(city + ', ' + state);
       reservationObject["location"] = city;
       reservationObject["locationState"] = state;
-      let response = getDateQuickReplies();
+      let response = getDateQuickReplies(userObj);
       city = "";
-      tempQuestion = 'getDate';
+      userObj.tempQuestion = 'getDate';
       console.log('tempQuestion = getDate');
-      callSendAPI(senderID, response);
+      callSendAPI(userObj.userId, response);
     } else {
       console.error("getUserCity failed:" + err);
     }
@@ -500,7 +499,7 @@ function getUserCity(senderID, lat, long) {
 
 
 //Get User City from Input Text
-function getUserCityFromUserInput(senderID, location) {
+function getUserCityFromUserInput(userObj, location) {
   request({
     "uri": "https://maps.googleapis.com/maps/api/geocode/json",
     "qs": { "key": ENV.config['GOOGLE_API_KEY'], "address": location },
@@ -511,12 +510,12 @@ function getUserCityFromUserInput(senderID, location) {
       var body = JSON.parse(body);
       let city = body.results[0].formatted_address;
       city = city.substr(0, city.indexOf(','));
-      tempQuestion = 'getDate';
+      userObj.tempQuestion = 'getDate';
       console.log('tempQuestion = getDate');
       reservationObject["location"] = city;
-      let response = getDateQuickReplies();
+      let response = getDateQuickReplies(userObj);
       console.log('Fetch City from Input - ' + city);
-      callSendAPI(senderID, response);
+      callSendAPI(userObj.userId, response);
     } else {
       console.error("getUserCityFromUserInput failed:" + err);
     }
