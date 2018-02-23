@@ -122,7 +122,7 @@ function handleMessage(event, userObj) {
   console.log(messageAttachments);
   if (messageAttachments) {
     if (messageAttachments[0].payload.coordinates) {
-      getUserCity(userObj.userId, messageAttachments[0].payload.coordinates.lat, messageAttachments[0].payload.coordinates.long);
+      getUserCity(userObj, messageAttachments[0].payload.coordinates.lat, messageAttachments[0].payload.coordinates.long);
     }
   } else if(messageText == "Future date"){
     response = { "text": "Please enter a future date." };
