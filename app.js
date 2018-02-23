@@ -61,7 +61,7 @@ app.post('/webhook', function (req, res) {
             });
         console.log("Active user: " + userObj);
         if (typeof(userObj) !== "object") {
-           console.log("No User Found. Fetching User Profile..." + userObj);
+           console.log("No User Found. Fetching User Profile...");
            request({ url: 'https://graph.facebook.com/v2.11/' + userId,
                 qs: { access_token: PAGE_ACCESS_TOKEN },
                 method: 'GET',
@@ -134,11 +134,12 @@ function handleMessage(event, userObj) {
         userObj.reservationObject["adults"] = entities.number[0].value;
         userObj.reservationObject["nights"] = entities.number[1].value;
         userObj.reservationObject["datetime"] = entities.datetime[0].value;
-        formatCheckInCheckOut(userObj.reservationObject.datetime, userObj.reservationObject.nights);
+        formatCheckInCheckOut(userObj);
         response = getShowResults(userObj);
         callSendAPI(userObj.userId, response);
-        response = getHotelListFromText(userObj);
         console.log(userObj.reservationObject);
+        response = getHotelListFromText(userObj);
+        
       } else {
         const intent = firstEntity(entities, 'intent');
         const greetings = firstEntity(entities, 'greetings');
@@ -168,7 +169,7 @@ function handleMessage(event, userObj) {
             console.log('tempQuestion = getNights');
           } else if (userObj.tempStore == 'nights' && userObj.tempQuestion == 'getNights') {
             userObj.reservationObject["nights"] = number.value;
-            formatCheckInCheckOut(userObj.reservationObject.datetime, userObj.reservationObject.nights);
+            formatCheckInCheckOut(userObj);
             response = getShowResults(userObj);
             callSendAPI(userObj.userId, response);
             console.log(userObj.reservationObject);
@@ -577,11 +578,11 @@ function getShowResults(userObj) {
   return response;
 }
 
-function formatCheckInCheckOut(userObj, arrivalDate, nightsCount) {
-  console.log("arrival date inside formattor" + arrivalDate);
-  var checkInDate = new Date(arrivalDate);
-  var checkOutDate = new Date(arrivalDate);
-  checkOutDate.setDate(checkInDate.getDate() + nightsCount);
+function formatCheckInCheckOut(userObj) {
+  console.log("Arrival date inside formattor: " + userObj.reservationObject.datetime);
+  var checkInDate = new Date(userObj.reservationObject.datetime);
+  var checkOutDate = new Date(userObj.reservationObject.datetime);
+  checkOutDate.setDate(checkInDate.getDate() + userObj.reservationObject.nights);
   var checkInDD = checkInDate.getDate();
   var checkInMM = checkInDate.getMonth() + 1;
   if (checkInDD < 10) {
