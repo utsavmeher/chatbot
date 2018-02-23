@@ -456,7 +456,6 @@ function getUserCity(userObj, lat, long) {
       userObj.reservationObject["location"] = city;
       userObj.reservationObject["locationState"] = state;
       let response = getDateQuickReplies(userObj);
-      city = "";
       userObj.tempQuestion = 'getDate';
       console.log('tempQuestion = getDate');
       callSendAPI(userObj.userId, response);
