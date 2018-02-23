@@ -4,23 +4,29 @@
 'use strict';
 
 // Imports dependencies and set up http server
-const
-  request = require('request'),
-  express = require('express'),
-  body_parser = require('body-parser'),
-  app = express().use(body_parser.json()); // creates express http server
 var ENV = require('./config.js');
 var CONFIG = require('./mappedkey.js');
 var sleep = require('thread-sleep');
+var User = require('./user-class.js');
+var _ = require('underscore');
+const request = require('request'),
+      express = require('express'),
+      body_parser = require('body-parser'),
+      app = express().use(body_parser.json()); // creates express http server
 const PAGE_ACCESS_TOKEN = ENV.config['PAGE_ACCESS_TOKEN'];
 const WIT_TOKEN = ENV.config['WIT_TOKEN'];
 const { firstEntity } = require('./shared.js');
 const Wit = require('node-wit/lib/wit');
 const wit = new Wit({ accessToken: WIT_TOKEN });
-var User = require('./user-class.js');
+
 var questionsList = [];
 var activeUsers = [];
-var _ = require('underscore');
+let reservationObject = {};
+let tempStore = '';
+let tempQuestion = '';
+let first_name = '';
+let changeSearchFlag = false;
+
 
 // Sets server port and logs message on success
 app.listen(process.env.PORT || 5000, () => console.log('Webhook is listening'));
@@ -103,17 +109,9 @@ app.post('/webhook', function (req, res) {
   }
 });
 
-let reservationObject = {};
-let tempStore = '';
-let tempQuestion = '';
-let first_name = '';
-let changeSearchFlag = false;
 // Handles messages events
 function handleMessage(event, userObj) {
   console.log('handleMessage event');
-  // var senderID = event.sender.id;
-  // var recipientID = event.recipient.id;
-  // var timeOfMessage = event.timestamp;
   var message = event.message;
   let response;
   var messageText = message.text;
@@ -128,7 +126,7 @@ function handleMessage(event, userObj) {
     }
   } else if(messageText == "Future date"){
     response = { "text": "Please enter a future date." };
-    tempQuestion = 'getDate';
+    userObj.tempQuestion = 'getDate';
     callSendAPI(userObj.userId, response);
   } else if (messageText == "Start Over") {
     changeSearchFlag = false;
@@ -159,25 +157,25 @@ function handleMessage(event, userObj) {
         console.log('changeSearchFlag: ' + changeSearchFlag);
         if (greetings && greetings.confidence > 0.9) {
           response = { "text": "Hello " + first_name + "," + CONFIG.keyMapped['welcome'] + ' ' + CONFIG.keyMapped['location'] };
-          tempQuestion = 'getLocation';
+          userObj.tempQuestion = 'getLocation';
           console.log('tempQuestion = getLocation');
-        } else if (tempQuestion == 'getLocation' && location && location.confidence > 0.87) {
+        } else if (userObj.tempQuestion == 'getLocation' && location && location.confidence > 0.87) {
           getUserCityFromUserInput(userObj.userId, location.value);
-        } else if (tempQuestion == 'getDate' && datetime && datetime.confidence > 0.9) {
+        } else if (userObj.tempQuestion == 'getDate' && datetime && datetime.confidence > 0.9) {
           response = { "text": CONFIG.keyMapped['guests'] };
           console.log("Inside getdate condition " + datetime.value)
           reservationObject["datetime"] = datetime.value;
           tempStore = 'adults';
-          tempQuestion = 'getGuests';
+          userObj.tempQuestion = 'getGuests';
           console.log('tempQuestion = getGuests');
-        } else if ((number && number.confidence > 0.9) && (tempQuestion == 'getGuests' || tempQuestion == 'getNights')) {
-          if (tempStore == 'adults' && tempQuestion == 'getGuests') {
+        } else if ((number && number.confidence > 0.9) && (userObj.tempQuestion == 'getGuests' || userObj.tempQuestion == 'getNights')) {
+          if (tempStore == 'adults' && userObj.tempQuestion == 'getGuests') {
             response = { "text": CONFIG.keyMapped['nights'] };
             reservationObject["adults"] = number.value;
             tempStore = 'nights';
-            tempQuestion = 'getNights';
+            userObj.tempQuestion = 'getNights';
             console.log('tempQuestion = getNights');
-          } else if (tempStore == 'nights' && tempQuestion == 'getNights') {
+          } else if (tempStore == 'nights' && userObj.tempQuestion == 'getNights') {
             reservationObject["nights"] = number.value;
             formatCheckInCheckOut(reservationObject.datetime, reservationObject.nights);
             response = getShowResults();
@@ -185,7 +183,7 @@ function handleMessage(event, userObj) {
             console.log(reservationObject);
             response = getHotelListFromText(userObj.userId);
             tempStore = '';
-            tempQuestion = '';
+            userObj.tempQuestion = '';
             console.log('tempQuestion = EMPTY');
           }
         } else {
@@ -265,6 +263,7 @@ function convertDateFormat(inputDate) {
 
 // Sends Location response to facebook via the Send API
 function callSendAPILocation(sender_psid, response, endpoint, method) {
+  
   endpoint = endpoint || 'messages';
   method = method || 'POST';
   if (changeSearchFlag) {
