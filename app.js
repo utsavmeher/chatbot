@@ -19,9 +19,8 @@ const { firstEntity } = require('./shared.js');
 const Wit = require('node-wit/lib/wit');
 const wit = new Wit({ accessToken: WIT_TOKEN });
 
-var questionsList = [];
+// var questionsList = [];
 var activeUsers = [];
-let reservationObject = {};
 let changeSearchFlag = false;
 
 
@@ -63,15 +62,10 @@ app.post('/webhook', function (req, res) {
         console.log("Active user: " + userObj);
         if (typeof(userObj) !== "object") {
            console.log("No User Found. Fetching User Profile..." + userObj);
-           request({
-                url: 'https://graph.facebook.com/v2.11/' + userId,
-                qs: {
-                    access_token: PAGE_ACCESS_TOKEN
-                },
+           request({ url: 'https://graph.facebook.com/v2.11/' + userId,
+                qs: { access_token: PAGE_ACCESS_TOKEN },
                 method: 'GET',
-                json: {
-                    fields: "first_name,last_name,profile_pic,locale,timezone,gender"
-                }
+                json: { fields: "first_name,last_name,profile_pic,locale,timezone,gender" }
             }, function(error, userData, body) {
                 if (error) {
                     console.log('Error sending messages: ', error)
@@ -141,9 +135,9 @@ function handleMessage(event, userObj) {
         userObj.reservationObject["nights"] = entities.number[1].value;
         userObj.reservationObject["datetime"] = entities.datetime[0].value;
         formatCheckInCheckOut(userObj.reservationObject.datetime, userObj.reservationObject.nights);
-        response = getShowResults();
+        response = getShowResults(userObj);
         callSendAPI(userObj.userId, response);
-        response = getHotelListFromText(userObj.userId);
+        response = getHotelListFromText(userObj);
         console.log(userObj.reservationObject);
       } else {
         const intent = firstEntity(entities, 'intent');
@@ -175,10 +169,10 @@ function handleMessage(event, userObj) {
           } else if (userObj.tempStore == 'nights' && userObj.tempQuestion == 'getNights') {
             userObj.reservationObject["nights"] = number.value;
             formatCheckInCheckOut(userObj.reservationObject.datetime, userObj.reservationObject.nights);
-            response = getShowResults();
+            response = getShowResults(userObj);
             callSendAPI(userObj.userId, response);
             console.log(userObj.reservationObject);
-            response = getHotelListFromText(userObj.userId);
+            response = getHotelListFromText(userObj);
             userObj.tempStore = '';
             userObj.tempQuestion = '';
             console.log('tempQuestion = EMPTY');
@@ -487,7 +481,7 @@ function getUserCityFromUserInput(userObj, location) {
       city = city.substr(0, city.indexOf(','));
       userObj.tempQuestion = 'getDate';
       console.log('tempQuestion = getDate');
-      reservationObject["location"] = city;
+      userObj.reservationObject["location"] = city;
       let response = getDateQuickReplies(userObj);
       console.log('Fetch City from Input - ' + city);
       callSendAPI(userObj.userId, response);
@@ -498,15 +492,15 @@ function getUserCityFromUserInput(userObj, location) {
 }
 
 //Get User City from Input Text
-function getHotelListFromText(senderID) {
+function getHotelListFromText(userObj) {
   console.log("getHotelListFromText method");
-  console.log(reservationObject.location);
-  console.log(reservationObject.startdate);
-  console.log(reservationObject.enddate);
-  console.log(reservationObject.adults);
+  console.log(userObj.reservationObject.location);
+  console.log(userObj.reservationObject.startdate);
+  console.log(userObj.reservationObject.enddate);
+  console.log(userObj.reservationObject.adults);
   request({
     "uri": "https://691f1bf7.ngrok.io/property/hotels",
-    "qs": { "city": reservationObject.location, "startdate": reservationObject.startdate, "enddate": reservationObject.enddate, "numberOfAdults": reservationObject.adults, "localeCode": "en" },
+    "qs": { "city": userObj.reservationObject.location, "startdate": userObj.reservationObject.startdate, "enddate": userObj.reservationObject.enddate, "numberOfAdults": userObj.reservationObject.adults, "localeCode": "en" },
     "method": "GET"
   }, (err, res, body) => {
     if (!err && res) {
@@ -546,11 +540,11 @@ function getHotelListFromText(senderID) {
         }
       };
       response = JSON.stringify(response);
-      console.log('senderID', senderID);
+      console.log('senderID', userObj.userId);
       } else {
         response ={"text": "No Hotels found for above search criteria." }
       }
-      callSendAPI(senderID, response);
+      callSendAPI(userObj.userId, response);
     } else {
       console.error("getHotelListFromText failed:" + err);
     }
@@ -558,13 +552,13 @@ function getHotelListFromText(senderID) {
 }
 
 // get the show results message
-function getShowResults() {
+function getShowResults(userObj) {
   let response = {
     "attachment": {
       "type": "template",
       "payload": {
         "template_type": "button",
-        "text": "Showing results for " + (reservationObject.location) + ", " + reservationObject.adults + " Adults with Check In on " + convertDateFormat(reservationObject.datetime) + " (For " + reservationObject.nights + " Nights).",
+        "text": "Showing results for " + (userObj.reservationObject.location) + ", " + userObj.reservationObject.adults + " Adults with Check In on " + convertDateFormat(userObj.reservationObject.datetime) + " (For " + userObj.reservationObject.nights + " Nights).",
         "buttons": [
           {
             "type": "postback",
@@ -583,7 +577,7 @@ function getShowResults() {
   return response;
 }
 
-function formatCheckInCheckOut(arrivalDate, nightsCount) {
+function formatCheckInCheckOut(userObj, arrivalDate, nightsCount) {
   console.log("arrival date inside formattor" + arrivalDate);
   var checkInDate = new Date(arrivalDate);
   var checkOutDate = new Date(arrivalDate);
@@ -608,8 +602,8 @@ function formatCheckInCheckOut(arrivalDate, nightsCount) {
   var checkOutYY = checkOutDate.getFullYear();
   checkInDate = checkInDD + '' + checkInMM + '' + checkInYY;
   checkOutDate = checkOutDD + '' + checkOutMM + '' + checkOutYY;
-  reservationObject['startdate'] = checkInDate;
-  reservationObject['enddate'] = checkOutDate;
+  userObj.reservationObject['startdate'] = checkInDate;
+  userObj.reservationObject['enddate'] = checkOutDate;
   console.log("Check In Date : " + checkInDate);
   console.log("Check Out Date : " + checkOutDate);
 }
