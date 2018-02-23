@@ -51,11 +51,15 @@ app.post('/webhook', function (req, res) {
   var data = req.body;
   if (data.object == 'page') {
     data.entry.forEach(function (pageEntry) {
-      console.log('pageEntry:');
       pageEntry.messaging.forEach(function (messagingEvent) {
-        console.log('messagingEvent inside post:');
         console.log(messagingEvent.sender.id);
         var userId =  messagingEvent.sender.id;
+        var userObj = _.findWhere(activeUsers, {
+                userId: userId.toString()
+            });
+        console.log("Active user: " + userObj);
+        if (typeof(userObj) !== "object") {
+           console.log("No User Found. Fetching User Profile..." + userObj);
            request({
                 url: 'https://graph.facebook.com/v2.11/' + userId,
                 qs: {
@@ -73,12 +77,18 @@ app.post('/webhook', function (req, res) {
                 } else {
                     var userObj = new User(userId, userData.body); //Set user object
                     activeUsers.push(_.clone(userObj)); //add user
-                    console.log("activeUsers");
+                    console.log("ActiveUsers:");
                     console.log(activeUsers);
-                    //send response
-                    //responseHandler.handleRequest(event, userObj, questionsList);
+                      if (messagingEvent.message) {
+                        handleMessage(messagingEvent);
+                      } else if (messagingEvent.postback) {
+                        handlePostback(messagingEvent);
+                      } else {
+                        console.log("Webhook received unknown messagingEvent:", messagingEvent);
+                      }
                 }
 				});
+        } else {
         if (messagingEvent.message) {
           handleMessage(messagingEvent);
         } else if (messagingEvent.postback) {
