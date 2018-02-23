@@ -169,8 +169,8 @@ function handleMessage(event, userObj) {
             formatCheckInCheckOut(userObj);
             response = getShowResults(userObj);
             callSendAPI(userObj.userId, response);
-            console.log(userObj.reservationObject);
             response = getHotelListFromText(userObj);
+            console.log(userObj.reservationObject);
             userObj.tempStore = '';
             userObj.tempQuestion = '';
             console.log('tempQuestion = EMPTY');
@@ -203,6 +203,7 @@ function handlePostback(event, userObj) {
     if (event.postback.payload === 'change_search') {
       userObj.changeSearchFlag = true;
     }
+    console.log('inside find hotels and change search callSendAILocation User Object: ');
     callSendAPILocation(userObj, response);
   } else if (event.postback.payload == 'did_you_know') {
     let response = {
