@@ -21,8 +21,6 @@ const wit = new Wit({ accessToken: WIT_TOKEN });
 
 // var questionsList = [];
 var activeUsers = [];
-let changeSearchFlag = false;
-
 
 // Sets server port and logs message on success
 app.listen(process.env.PORT || 5000, () => console.log('Webhook is listening'));
@@ -120,7 +118,7 @@ function handleMessage(event, userObj) {
     userObj.tempQuestion = 'getDate';
     callSendAPI(userObj.userId, response);
   } else if (messageText == "Start Over") {
-    changeSearchFlag = false;
+    userObj.changeSearchFlag = false;
     userObj.reservationObject = {};
     callSendAPIFirstName(userObj);
   } else {
@@ -137,16 +135,15 @@ function handleMessage(event, userObj) {
         formatCheckInCheckOut(userObj);
         response = getShowResults(userObj);
         callSendAPI(userObj.userId, response);
-        console.log(userObj.reservationObject);
         response = getHotelListFromText(userObj);
-        
+        console.log(userObj.reservationObject);
       } else {
         const intent = firstEntity(entities, 'intent');
         const greetings = firstEntity(entities, 'greetings');
         const location = firstEntity(entities, 'location');
         const number = firstEntity(entities, 'number');
         const datetime = firstEntity(entities, 'datetime');
-        console.log('changeSearchFlag: ' + changeSearchFlag);
+        console.log('changeSearchFlag: ' + userObj.changeSearchFlag);
         if (greetings && greetings.confidence > 0.9) {
           response = { "text": "Hello " + userObj.profile.first_name + "," + CONFIG.keyMapped['welcome'] + ' ' + CONFIG.keyMapped['location'] };
           userObj.tempQuestion = 'getLocation';
@@ -199,12 +196,12 @@ function handlePostback(event, userObj) {
   console.log('event.postback.payload');
   console.log(event.postback.payload);
   if (event.postback.payload === 'Start') {
-    changeSearchFlag = false;
+    userObj.changeSearchFlag = false;
     userObj.reservationObject = {};
     callSendAPIFirstName(userObj);
   } else if (event.postback.payload === 'find_hotels' || event.postback.payload === 'change_search') {
     if (event.postback.payload === 'change_search') {
-      changeSearchFlag = true;
+      userObj.changeSearchFlag = true;
     }
     callSendAPILocation(userObj, response);
   } else if (event.postback.payload == 'did_you_know') {
@@ -256,7 +253,8 @@ function convertDateFormat(inputDate) {
 function callSendAPILocation(userObj, response, endpoint, method) {
   endpoint = endpoint || 'messages';
   method = method || 'POST';
-  if (changeSearchFlag) {
+  console.log(userObj);
+  if (userObj.changeSearchFlag) {
     console.log('change_search - in callSendAPILocation');
     response = {
       "text": "Previous search summary - for location : " + (userObj.reservationObject.location) + "," + userObj.reservationObject.adults + " Adults with Check In on " + convertDateFormat(userObj.reservationObject.datetime) + " (For " + userObj.reservationObject.nights + " Nights). For New Search - Please name a city " + userObj.profile.first_name + ".",
