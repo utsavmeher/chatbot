@@ -25,31 +25,30 @@ var _ = require('underscore');
 // Sets server port and logs message on success
 app.listen(process.env.PORT || 5000, () => console.log('Webhook is listening'));
 
-// Accepts GET requests at the /webhook endpoint
-app.get('/webhook', (req, res) => {
-  /** UPDATE YOUR VERIFY TOKEN * */
-  const VERIFY_TOKEN = "randomrandom";
-
-  // Parse params from the webhook verification request
-  let mode = req.query['hub.mode'];
-  let token = req.query['hub.verify_token'];
-  let challenge = req.query['hub.challenge'];
-  console.log(PAGE_ACCESS_TOKEN);
-  // Check if a token and mode were sent
-  if (mode && token) {
-    // Check the mode and token sent are correct
-    if (mode === 'subscribe' && token === VERIFY_TOKEN) {
-      // Respond with 200 OK and challenge token from the request
-      console.log('WEBHOOK_VERIFIED');
-      res.status(200).send(challenge);
-      getStarted();
-      greeting();
-    } else {
-      // Responds with '403 Forbidden' if verify tokens do not match
-      res.sendStatus(403);
-    }
-  }
-});
+// // Accepts GET requests at the /webhook endpoint
+// app.get('/webhook', (req, res) => {
+//   /** UPDATE YOUR VERIFY TOKEN * */
+//   const VERIFY_TOKEN = "randomrandom";
+//   // Parse params from the webhook verification request
+//   let mode = req.query['hub.mode'];
+//   let token = req.query['hub.verify_token'];
+//   let challenge = req.query['hub.challenge'];
+//   console.log(PAGE_ACCESS_TOKEN);
+//   // Check if a token and mode were sent
+//   if (mode && token) {
+//     // Check the mode and token sent are correct
+//     if (mode === 'subscribe' && token === VERIFY_TOKEN) {
+//       // Respond with 200 OK and challenge token from the request
+//       console.log('WEBHOOK_VERIFIED');
+//       res.status(200).send(challenge);
+//       getStarted();
+//       greeting();
+//     } else {
+//       // Responds with '403 Forbidden' if verify tokens do not match
+//       res.sendStatus(403);
+//     }
+//   }
+// });
 
 /*
 * webhook listens to the messages that are sent to the FB Page/App
@@ -59,11 +58,10 @@ app.post('/webhook', function (req, res) {
   if (data.object == 'page') {
     data.entry.forEach(function (pageEntry) {
       console.log('pageEntry:');
-      // Iterate over each messaging event
       pageEntry.messaging.forEach(function (messagingEvent) {
         console.log('messagingEvent inside post:');
-		console.log(messagingEvent.sender.id);
-		var userId =  messagingEvent.sender.id;
+        console.log(messagingEvent.sender.id);
+        var userId =  messagingEvent.sender.id;
            request({
                 url: 'https://graph.facebook.com/v2.11/' + userId,
                 qs: {
@@ -74,26 +72,25 @@ app.post('/webhook', function (req, res) {
                     fields: "first_name,last_name,profile_pic,locale,timezone,gender"
                 }
             }, function(error, userData, body) {
-
-                  if (error) {
-                      console.log('Error sending messages: ', error)
-                  } else if (userData.body.error) {
-                      console.log('Error: ', userData.body.error)
-                  } else {
-                      var userObj = new User(userId, userData.body); //Set user object
-                      activeUsers.push(_.clone(userObj)); //add user
-          console.log("activeUsers");
-          console.log(activeUsers);
-                      //send response
-                      //responseHandler.handleRequest(event, userObj, questionsList);
-                  }
+                if (error) {
+                    console.log('Error sending messages: ', error)
+                } else if (userData.body.error) {
+                    console.log('Error: ', userData.body.error)
+                } else {
+                    var userObj = new User(userId, userData.body); //Set user object
+                    activeUsers.push(_.clone(userObj)); //add user
+                    console.log("activeUsers");
+                    console.log(activeUsers);
+                    //send response
+                    //responseHandler.handleRequest(event, userObj, questionsList);
+                }
 				});
         if (messagingEvent.message) {
           handleMessage(messagingEvent);
         } else if (messagingEvent.postback) {
           handlePostback(messagingEvent);
         } else {
-          console.log("Webhook received unknown messagingEvent: ", messagingEvent);
+          console.log("Webhook received unknown messagingEvent:", messagingEvent);
         }
       });
     });
