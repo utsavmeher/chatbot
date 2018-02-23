@@ -131,7 +131,7 @@ function handleMessage(event, userObj) {
   } else if (messageText == "Start Over") {
     changeSearchFlag = false;
     reservationObject = {};
-    callSendAPIFirstName(userObj, response);
+    callSendAPIFirstName(userObj);
   } else {
     callTypingOn(userObj.userId);
     console.log("messege text before wit" + messageText);
@@ -209,7 +209,7 @@ function handlePostback(event, userObj) {
   if (event.postback.payload === 'Start') {
     changeSearchFlag = false;
     reservationObject = {};
-    callSendAPIFirstName(userObj, response);
+    callSendAPIFirstName(userObj);
   } else if (event.postback.payload === 'find_hotels' || event.postback.payload === 'change_search') {
     if (event.postback.payload === 'change_search') {
       changeSearchFlag = true;
@@ -268,7 +268,7 @@ function callSendAPILocation(userObj, response, endpoint, method) {
   if (changeSearchFlag) {
     console.log('change_search - in callSendAPILocation');
     response = {
-      "text": "Previous search summary - for location : " + (reservationObject.location) + "," + reservationObject.adults + " Adults with Check In on " + convertDateFormat(reservationObject.datetime) + " (For " + reservationObject.nights + " Nights). For New Search - Please name a city " + first_name + ".",
+      "text": "Previous search summary - for location : " + (reservationObject.location) + "," + reservationObject.adults + " Adults with Check In on " + convertDateFormat(reservationObject.datetime) + " (For " + reservationObject.nights + " Nights). For New Search - Please name a city " + userObj.profile.first_name + ".",
       "quick_replies": [
         {
           "content_type": "location"
@@ -277,7 +277,7 @@ function callSendAPILocation(userObj, response, endpoint, method) {
     }
   } else {
     response = {
-      "text": CONFIG.keyMapped['location'] + first_name + ".",
+      "text": CONFIG.keyMapped['location'] + userObj.profile.first_name + ".",
       "quick_replies": [
         {
           "content_type": "location"
@@ -338,25 +338,8 @@ function getDateQuickReplies(userObj) {
 }
 
 // Get the first name and Shows the First Greeting Msg to the User
-function callSendAPIFirstName(userObj, response) {
-  let request_body = {
-    "messaging_type": "RESPONSE",
-    "recipient": {
-      "id": userObj.userId
-    },
-    "message": response
-  };
-  // Send the HTTP request to the Messenger Platform
-  request({
-    "uri": 'https://graph.facebook.com/v2.11/' + userObj.userId,
-    "qs": { "access_token": PAGE_ACCESS_TOKEN, fields: 'first_name' },
-    "method": "GET",
-    "json": request_body
-  }, (err, res, body) => {
-    if (!err) {
-      console.log('callSendAPIFirstName Response');
-      first_name = body.first_name;
-      response = {
+function callSendAPIFirstName(userObj) {
+    let response = {
         "attachment": {
           "type": "template",
           "payload": {
@@ -384,11 +367,7 @@ function callSendAPIFirstName(userObj, response) {
       };
       userObj.tempQuestion = 'getStarted';
       console.log('tempQuestion = getStarted');
-    } else {
-      console.error("callSendAPIFirstName Unable to send message:" + err);
-    }
-    callSendAPI(userObj.userId, response);
-  });
+      callSendAPI(userObj.userId, response);
 }
 
 // Send the Typing Message request to the Messenger Platform
