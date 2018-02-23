@@ -22,9 +22,6 @@ const wit = new Wit({ accessToken: WIT_TOKEN });
 var questionsList = [];
 var activeUsers = [];
 let reservationObject = {};
-let tempStore = '';
-// let tempQuestion = '';
-let first_name = '';
 let changeSearchFlag = false;
 
 
@@ -130,7 +127,7 @@ function handleMessage(event, userObj) {
     callSendAPI(userObj.userId, response);
   } else if (messageText == "Start Over") {
     changeSearchFlag = false;
-    reservationObject = {};
+    userObj.reservationObject = {};
     callSendAPIFirstName(userObj);
   } else {
     callTypingOn(userObj.userId);
@@ -139,15 +136,15 @@ function handleMessage(event, userObj) {
       console.log('Wit Response');
       console.log(entities);
       if (entities.location && entities.number && entities.number[0] && entities.number[1] && entities.datetime) {
-        reservationObject["location"] = entities.location[0].value;
-        reservationObject["adults"] = entities.number[0].value;
-        reservationObject["nights"] = entities.number[1].value;
-        reservationObject["datetime"] = entities.datetime[0].value;
-        formatCheckInCheckOut(reservationObject.datetime, reservationObject.nights);
+        userObj.reservationObject["location"] = entities.location[0].value;
+        userObj.reservationObject["adults"] = entities.number[0].value;
+        userObj.reservationObject["nights"] = entities.number[1].value;
+        userObj.reservationObject["datetime"] = entities.datetime[0].value;
+        formatCheckInCheckOut(userObj.reservationObject.datetime, userObj.reservationObject.nights);
         response = getShowResults();
         callSendAPI(userObj.userId, response);
         response = getHotelListFromText(userObj.userId);
-        console.log(reservationObject);
+        console.log(userObj.reservationObject);
       } else {
         const intent = firstEntity(entities, 'intent');
         const greetings = firstEntity(entities, 'greetings');
@@ -164,25 +161,25 @@ function handleMessage(event, userObj) {
         } else if (userObj.tempQuestion == 'getDate' && datetime && datetime.confidence > 0.9) {
           response = { "text": CONFIG.keyMapped['guests'] };
           console.log("Inside getdate condition " + datetime.value)
-          reservationObject["datetime"] = datetime.value;
-          tempStore = 'adults';
+          userObj.reservationObject["datetime"] = datetime.value;
+          userObj.tempStore = 'adults';
           userObj.tempQuestion = 'getGuests';
           console.log('tempQuestion = getGuests');
         } else if ((number && number.confidence > 0.9) && (userObj.tempQuestion == 'getGuests' || userObj.tempQuestion == 'getNights')) {
-          if (tempStore == 'adults' && userObj.tempQuestion == 'getGuests') {
+          if (userObj.tempStore == 'adults' && userObj.tempQuestion == 'getGuests') {
             response = { "text": CONFIG.keyMapped['nights'] };
-            reservationObject["adults"] = number.value;
-            tempStore = 'nights';
+            userObj.reservationObject["adults"] = number.value;
+            userObj.tempStore = 'nights';
             userObj.tempQuestion = 'getNights';
             console.log('tempQuestion = getNights');
-          } else if (tempStore == 'nights' && userObj.tempQuestion == 'getNights') {
-            reservationObject["nights"] = number.value;
-            formatCheckInCheckOut(reservationObject.datetime, reservationObject.nights);
+          } else if (userObj.tempStore == 'nights' && userObj.tempQuestion == 'getNights') {
+            userObj.reservationObject["nights"] = number.value;
+            formatCheckInCheckOut(userObj.reservationObject.datetime, userObj.reservationObject.nights);
             response = getShowResults();
             callSendAPI(userObj.userId, response);
-            console.log(reservationObject);
+            console.log(userObj.reservationObject);
             response = getHotelListFromText(userObj.userId);
-            tempStore = '';
+            userObj.tempStore = '';
             userObj.tempQuestion = '';
             console.log('tempQuestion = EMPTY');
           }
@@ -208,13 +205,12 @@ function handlePostback(event, userObj) {
   console.log(event.postback.payload);
   if (event.postback.payload === 'Start') {
     changeSearchFlag = false;
-    reservationObject = {};
+    userObj.reservationObject = {};
     callSendAPIFirstName(userObj);
   } else if (event.postback.payload === 'find_hotels' || event.postback.payload === 'change_search') {
     if (event.postback.payload === 'change_search') {
       changeSearchFlag = true;
     }
-    // reservationObject = {};
     callSendAPILocation(userObj, response);
   } else if (event.postback.payload == 'did_you_know') {
     let response = {
@@ -268,7 +264,7 @@ function callSendAPILocation(userObj, response, endpoint, method) {
   if (changeSearchFlag) {
     console.log('change_search - in callSendAPILocation');
     response = {
-      "text": "Previous search summary - for location : " + (reservationObject.location) + "," + reservationObject.adults + " Adults with Check In on " + convertDateFormat(reservationObject.datetime) + " (For " + reservationObject.nights + " Nights). For New Search - Please name a city " + userObj.profile.first_name + ".",
+      "text": "Previous search summary - for location : " + (userObj.reservationObject.location) + "," + userObj.reservationObject.adults + " Adults with Check In on " + convertDateFormat(userObj.reservationObject.datetime) + " (For " + userObj.reservationObject.nights + " Nights). For New Search - Please name a city " + userObj.profile.first_name + ".",
       "quick_replies": [
         {
           "content_type": "location"
@@ -311,9 +307,9 @@ function callSendAPILocation(userObj, response, endpoint, method) {
 
 // Sends Quick Reples response to facebook via the Send API
 function getDateQuickReplies(userObj) {
-  let state = reservationObject.locationState ? ', ' + reservationObject.locationState : "";
+  userObj.state = userObj.reservationObject.locationState ? ', ' + userObj.reservationObject.locationState : "";
   let response = {
-    "text": CONFIG.keyMapped['location1'] + reservationObject.location + state + "\n" + CONFIG.keyMapped['date'],
+    "text": CONFIG.keyMapped['location1'] + userObj.reservationObject.location + userObj.state + "\n" + CONFIG.keyMapped['date'],
     "quick_replies": [
       {
         "content_type": "text",
@@ -463,8 +459,8 @@ function getUserCity(userObj, lat, long) {
       let state = body.results[0].address_components[size - 3].short_name;
       console.log(body.results[0]);
       console.log(city + ', ' + state);
-      reservationObject["location"] = city;
-      reservationObject["locationState"] = state;
+      userObj.reservationObject["location"] = city;
+      userObj.reservationObject["locationState"] = state;
       let response = getDateQuickReplies(userObj);
       city = "";
       userObj.tempQuestion = 'getDate';

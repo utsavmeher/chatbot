@@ -9,6 +9,7 @@
         this.reservationObject = {};
         this.tempQuestion = '';
         this.tempStore = '';
+        this.state='';
     }
     module.exports = User;
 }());
