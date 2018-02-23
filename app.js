@@ -111,9 +111,9 @@ let changeSearchFlag = false;
 // Handles messages events
 function handleMessage(event, userObj) {
   console.log('handleMessage event');
-  var senderID = event.sender.id;
-  var recipientID = event.recipient.id;
-  var timeOfMessage = event.timestamp;
+  // var senderID = event.sender.id;
+  // var recipientID = event.recipient.id;
+  // var timeOfMessage = event.timestamp;
   var message = event.message;
   let response;
   var messageText = message.text;
@@ -198,9 +198,9 @@ function handleMessage(event, userObj) {
 }
 // Handles messaging_postbacks events
 function handlePostback(event, userObj) {
-  var senderID = event.sender.id;
-  var recipientID = event.recipient.id;
-  var timeOfMessage = event.timestamp;
+  // var senderID = event.sender.id;
+  // var recipientID = event.recipient.id;
+  // var timeOfMessage = event.timestamp;
   var message = event.message;
   console.log('handlePostback event');
   let response;
@@ -211,13 +211,13 @@ function handlePostback(event, userObj) {
   if (event.postback.payload === 'Start') {
     changeSearchFlag = false;
     reservationObject = {};
-    callSendAPIFirstName(senderID, response);
+    callSendAPIFirstName(userObj.userId, response);
   } else if (event.postback.payload === 'find_hotels' || event.postback.payload === 'change_search') {
     if (event.postback.payload === 'change_search') {
       changeSearchFlag = true;
     }
     // reservationObject = {};
-    callSendAPILocation(senderID, response);
+    callSendAPILocation(userObj.userId, response);
   } else if (event.postback.payload == 'did_you_know') {
     let response = {
       "text": CONFIG.keyMapped['didYouKnow'],
@@ -229,7 +229,7 @@ function handlePostback(event, userObj) {
         }
       ]
     };
-    callSendAPI(senderID, response);
+    callSendAPI(userObj.userId, response);
   }
 }
 
