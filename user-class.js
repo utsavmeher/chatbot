@@ -11,7 +11,6 @@
         this.tempStore = '';
         this.state='';
         this.changeSearchFlag = false;
-      this.datetime='';
     }
     module.exports = User;
 }());
