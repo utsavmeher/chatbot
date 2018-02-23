@@ -64,29 +64,29 @@ app.post('/webhook', function (req, res) {
         console.log('messagingEvent inside post:');
 		console.log(messagingEvent.sender.id);
 		var userId =  messagingEvent.sender.id;
-		request({
-                    url: 'https://graph.facebook.com/v2.11/' + userId,
-                    qs: {
-                        access_token: PAGE_ACCESS_TOKEN
-                    },
-                    method: 'GET',
-                    json: {
-                        fields: "first_name,last_name,profile_pic,locale,timezone,gender"
-                    }
-                }, function(error, userData, body) {
+           request({
+                url: 'https://graph.facebook.com/v2.11/' + userId,
+                qs: {
+                    access_token: PAGE_ACCESS_TOKEN
+                },
+                method: 'GET',
+                json: {
+                    fields: "first_name,last_name,profile_pic,locale,timezone,gender"
+                }
+            }, function(error, userData, body) {
 
-                    if (error) {
-                        console.log('Error sending messages: ', error)
-                    } else if (userData.body.error) {
-                        console.log('Error: ', userData.body.error)
-                    } else {
-                        var userObj = new User(userId, userData.body); //Set user object
-                        activeUsers.push(_.clone(userObj)); //add user
-						console.log("activeUsers");
-						console.log(activeUsers);
-                        //send response
-                        //responseHandler.handleRequest(event, userObj, questionsList);
-                    }
+                  if (error) {
+                      console.log('Error sending messages: ', error)
+                  } else if (userData.body.error) {
+                      console.log('Error: ', userData.body.error)
+                  } else {
+                      var userObj = new User(userId, userData.body); //Set user object
+                      activeUsers.push(_.clone(userObj)); //add user
+          console.log("activeUsers");
+          console.log(activeUsers);
+                      //send response
+                      //responseHandler.handleRequest(event, userObj, questionsList);
+                  }
 				});
         if (messagingEvent.message) {
           handleMessage(messagingEvent);
