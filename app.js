@@ -25,30 +25,24 @@ var _ = require('underscore');
 // Sets server port and logs message on success
 app.listen(process.env.PORT || 5000, () => console.log('Webhook is listening'));
 
-// // Accepts GET requests at the /webhook endpoint
-// app.get('/webhook', (req, res) => {
-//   /** UPDATE YOUR VERIFY TOKEN * */
-//   const VERIFY_TOKEN = "randomrandom";
-//   // Parse params from the webhook verification request
-//   let mode = req.query['hub.mode'];
-//   let token = req.query['hub.verify_token'];
-//   let challenge = req.query['hub.challenge'];
-//   console.log(PAGE_ACCESS_TOKEN);
-//   // Check if a token and mode were sent
-//   if (mode && token) {
-//     // Check the mode and token sent are correct
-//     if (mode === 'subscribe' && token === VERIFY_TOKEN) {
-//       // Respond with 200 OK and challenge token from the request
-//       console.log('WEBHOOK_VERIFIED');
-//       res.status(200).send(challenge);
-//       getStarted();
-//       greeting();
-//     } else {
-//       // Responds with '403 Forbidden' if verify tokens do not match
-//       res.sendStatus(403);
-//     }
-//   }
-// });
+// Accepts GET requests at the /webhook endpoint
+app.get('/webhook', (req, res) => {
+  const VERIFY_TOKEN = "randomrandom";
+  let mode = req.query['hub.mode'];
+  let token = req.query['hub.verify_token'];
+  let challenge = req.query['hub.challenge'];
+  console.log(PAGE_ACCESS_TOKEN);
+  if (mode && token) {
+    if (mode === 'subscribe' && token === VERIFY_TOKEN) {
+      console.log('WEBHOOK_VERIFIED');
+      res.status(200).send(challenge);
+      getStarted();
+      greeting();
+    } else {
+      res.sendStatus(403);
+    }
+  }
+});
 
 /*
 * webhook listens to the messages that are sent to the FB Page/App
