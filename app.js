@@ -185,14 +185,9 @@ function handleMessage(event, userObj) {
 }
 // Handles messaging_postbacks events
 function handlePostback(event, userObj) {
-  // var senderID = event.sender.id;
-  // var recipientID = event.recipient.id;
-  // var timeOfMessage = event.timestamp;
   var message = event.message;
   console.log('handlePostback event');
   let response;
-  // callTypingOn(senderID);
-
   console.log('event.postback.payload');
   console.log(event.postback.payload);
   if (event.postback.payload === 'Start') {
@@ -203,6 +198,7 @@ function handlePostback(event, userObj) {
     if (event.postback.payload === 'change_search') {
       userObj.changeSearchFlag = true;
     }
+    console.log(userObj);
     console.log('inside find hotels and change search callSendAILocation User Object: ');
     callSendAPILocation(userObj, response);
   } else if (event.postback.payload == 'did_you_know') {
@@ -506,7 +502,9 @@ function getHotelListFromText(userObj) {
       console.log('getHotelListFromText response');
       let response = {};
       let hotelList = [];
+      if(body){
       hotelList = JSON.parse(body);
+      }
       console.log('Hotel List response');
       console.log(hotelList);
       if(hotelList.length){
