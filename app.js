@@ -211,33 +211,6 @@ function handlePostback(event, userObj) {
     callSendAPI(userObj.userId, response);
   }
 }
-
-// Sends response messages to facebook via the Send API
-function callSendAPI(sender_psid, response, endpoint, method) {
-  endpoint = endpoint || 'messages';
-  method = method || 'POST';
-  let request_body = {
-    "messaging_type": "RESPONSE",
-    "recipient": {
-      "id": sender_psid
-    },
-    "message": response
-  };
-  // Send the HTTP request to the Messenger Platform
-  request({
-    "uri": `https://graph.facebook.com/v2.11/me/` + `${endpoint}`,
-    "qs": { "access_token": PAGE_ACCESS_TOKEN },
-    "method": method,
-    "json": request_body
-  }, (err, res, body) => {
-    if (!err) {
-      console.log('callSendAPI Response', body);
-    } else {
-      console.error("callSendAPI Unable to send message:" + err);
-    }
-  });
-}
-
 function convertDateFormat(inputDate) {
   return inputDate.substr(0, inputDate.indexOf('T'));
 }
@@ -259,7 +232,7 @@ function callSendAPILocation(userObj, response, endpoint, method) {
     }
   } else {
     response = {
-      "text": CONFIG.keyMapped['location'] + userObj.profile.first_name + ".",
+      "text": CONFIG.keyMapped['location'],
       "quick_replies": [
         {
           "content_type": "location"
@@ -600,4 +573,30 @@ function getCheckInCheckOut(userObj) {
   userObj.reservationObject['enddate'] = checkOutDate;
   console.log("Check In Date : " + checkInDate);
   console.log("Check Out Date : " + checkOutDate);
+}
+
+// Sends response messages to facebook via the Send API
+function callSendAPI(sender_psid, response, endpoint, method) {
+  endpoint = endpoint || 'messages';
+  method = method || 'POST';
+  let request_body = {
+    "messaging_type": "RESPONSE",
+    "recipient": {
+      "id": sender_psid
+    },
+    "message": response
+  };
+  // Send the HTTP request to the Messenger Platform
+  request({
+    "uri": `https://graph.facebook.com/v2.11/me/` + `${endpoint}`,
+    "qs": { "access_token": PAGE_ACCESS_TOKEN },
+    "method": method,
+    "json": request_body
+  }, (err, res, body) => {
+    if (!err) {
+      console.log('callSendAPI Response', body);
+    } else {
+      console.error("callSendAPI Unable to send message:" + err);
+    }
+  });
 }
