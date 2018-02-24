@@ -443,8 +443,6 @@ function getUserCity(userObj, lat, long) {
       var size = body.results[0].address_components.length;
       let city = body.results[0].address_components[size - 4].short_name;
       let state = body.results[0].address_components[size - 3].short_name;
-      console.log(body.results[0]);
-      console.log(city + ', ' + state);
       userObj.reservationObject["location"] = city;
       userObj.reservationObject["locationState"] = state;
       let response = getDateQuickReplies(userObj);
@@ -468,11 +466,14 @@ function getUserCityFromUserInput(userObj, location) {
     if (!err) {
       console.log('getUserCityFromUserInput response');
       var body = JSON.parse(body);
-      let city = body.results[0].formatted_address;
-      city = city.substr(0, city.indexOf(','));
+      let address = body.results[0].formatted_address;
+      console.log(body.results[0].formatted_address);
+      let city = address.substr(0, address.indexOf(','));
+      let state = address.substr(1, address.indexOf(','));
       userObj.tempQuestion = 'getDate';
       console.log('tempQuestion = getDate');
       userObj.reservationObject["location"] = city;
+      userObj.reservationObject["locationState"] = state;
       let response = getDateQuickReplies(userObj);
       console.log('Fetch City from Input - ' + city);
       callSendAPI(userObj.userId, response);
