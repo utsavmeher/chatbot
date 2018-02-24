@@ -31,7 +31,6 @@ app.get('/webhook', (req, res) => {
   let mode = req.query['hub.mode'];
   let token = req.query['hub.verify_token'];
   let challenge = req.query['hub.challenge'];
-  console.log(PAGE_ACCESS_TOKEN);
   if (mode && token) {
     if (mode === 'subscribe' && token === VERIFY_TOKEN) {
       console.log('WEBHOOK_VERIFIED');
@@ -52,12 +51,12 @@ app.post('/webhook', function (req, res) {
   if (data.object == 'page') {
     data.entry.forEach(function (pageEntry) {
       pageEntry.messaging.forEach(function (messagingEvent) {
-        console.log(messagingEvent.sender.id);
+        console.log("Inside Page Entry, User ID: " + messagingEvent.sender.id);
         var userId =  messagingEvent.sender.id;
         var userObj = _.findWhere(activeUsers, {
                 userId: userId.toString()
             });
-        console.log("Active user: " + userObj);
+        console.log("Active User: " + userObj);
         if (typeof(userObj) !== "object") {
            console.log("No User Found. Fetching User Profile...");
            request({ url: 'https://graph.facebook.com/v2.11/' + userId,
@@ -66,13 +65,13 @@ app.post('/webhook', function (req, res) {
                 json: { fields: "first_name,last_name,profile_pic,locale,timezone,gender" }
             }, function(error, userData, body) {
                 if (error) {
-                    console.log('Error sending messages: ', error)
+                    console.log('Error getting User Profile: ', error)
                 } else if (userData.body.error) {
-                    console.log('Error: ', userData.body.error)
+                    console.log('Error getting User Profile: ', userData.body.error)
                 } else {
-                    var userObj = new User(userId, userData.body); //Set user object
-                    activeUsers.push(_.clone(userObj)); //add user
-                    console.log("ActiveUsers:");
+                    var userObj = new User(userId, userData.body);
+                    activeUsers.push(_.clone(userObj));
+                    console.log("Active Users:");
                     console.log(activeUsers);
                       if (messagingEvent.message) {
                         handleMessage(messagingEvent, userObj);
@@ -101,12 +100,11 @@ app.post('/webhook', function (req, res) {
 // Handles messages events
 function handleMessage(event, userObj) {
   console.log('handleMessage event');
-  var message = event.message;
   let response;
-  var messageText = message.text;
+  var messageText = event.message.text;
   console.log('messageText');
   console.log(messageText);
-  var messageAttachments = message.attachments;
+  var messageAttachments = event.message.attachments;
   console.log('messageAttachments');
   console.log(messageAttachments);
   if (messageAttachments) {
@@ -198,8 +196,6 @@ function handlePostback(event, userObj) {
     if (event.postback.payload === 'change_search') {
       userObj.changeSearchFlag = true;
     }
-    console.log(userObj);
-    console.log('inside find hotels and change search callSendAILocation User Object: ');
     callSendAPILocation(userObj, response);
   } else if (event.postback.payload == 'did_you_know') {
     let response = {
