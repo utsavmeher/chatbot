@@ -132,7 +132,7 @@ function handleMessage(event, userObj) {
         userObj.reservationObject["adults"] = entities.number[0].value;
         userObj.reservationObject["nights"] = entities.number[1].value;
         userObj.reservationObject["datetime"] = entities.datetime[0].value;
-        formatCheckInCheckOut(userObj);
+        getCheckInCheckOut(userObj);
         response = getShowResults(userObj);
         callSendAPI(userObj.userId, response);
         response = getHotelListFromText(userObj);
@@ -166,7 +166,7 @@ function handleMessage(event, userObj) {
             console.log('tempQuestion = getNights');
           } else if (userObj.tempStore == 'nights' && userObj.tempQuestion == 'getNights') {
             userObj.reservationObject["nights"] = number.value;
-            formatCheckInCheckOut(userObj);
+            getCheckInCheckOut(userObj);
             response = getShowResults(userObj);
             callSendAPI(userObj.userId, response);
             response = getHotelListFromText(userObj);
@@ -572,7 +572,7 @@ function getShowResults(userObj) {
   return response;
 }
 
-function formatCheckInCheckOut(userObj) {
+function getCheckInCheckOut(userObj) {
   console.log("Arrival date inside formattor: " + userObj.reservationObject.datetime);
   var checkInDate = new Date(userObj.reservationObject.datetime);
   var checkOutDate = new Date(userObj.reservationObject.datetime);
