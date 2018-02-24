@@ -465,11 +465,12 @@ function getUserCityFromUserInput(userObj, location) {
   }, (err, res, body) => {
     if (!err) {
       console.log('getUserCityFromUserInput response');
-      var body = JSON.parse(body);
+      let body = JSON.parse(body);
       let address = body.results[0].formatted_address;
-      console.log(body.results[0].formatted_address);
-      let city = address.substr(0, address.indexOf(','));
-      let state = address.substr(0, address.indexOf(','));
+      console.log(body.results[0].address_components);
+      let size = body.results[0].address_components.length;
+      let city = body.results[0].address_components[size - 2].short_name;
+      let state = body.results[0].address_components[size - 2].short_name;
       userObj.tempQuestion = 'getDate';
       console.log('tempQuestion = getDate');
       userObj.reservationObject["location"] = city;
