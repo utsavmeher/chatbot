@@ -118,7 +118,7 @@ function handleMessage(event, userObj) {
   } else if (messageText == "Start Over") {
     userObj.changeSearchFlag = false;
     userObj.reservationObject = {};
-    callSendAPIFirstName(userObj);
+    getStartingIntro(userObj);
   } else {
     callTypingOn(userObj.userId);
     console.log("messege text before wit" + messageText);
@@ -191,7 +191,7 @@ function handlePostback(event, userObj) {
   if (event.postback.payload === 'Start') {
     userObj.changeSearchFlag = false;
     userObj.reservationObject = {};
-    callSendAPIFirstName(userObj);
+    getStartingIntro(userObj);
   } else if (event.postback.payload === 'find_hotels' || event.postback.payload === 'change_search') {
     if (event.postback.payload === 'change_search') {
       userObj.changeSearchFlag = true;
@@ -320,7 +320,7 @@ function getDateQuickReplies(userObj) {
 }
 
 // Get the first name and Shows the First Greeting Msg to the User
-function callSendAPIFirstName(userObj) {
+function getStartingIntro(userObj) {
     let response = {
         "attachment": {
           "type": "template",
