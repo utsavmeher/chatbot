@@ -9,6 +9,7 @@ var CONFIG = require('./mappedkey.js');
 var sleep = require('thread-sleep');
 var User = require('./user-class.js');
 var _ = require('underscore');
+var url = require("url");
 const request = require('request'),
       express = require('express'),
       body_parser = require('body-parser'),
@@ -493,6 +494,8 @@ function getHotelListFromText(userObj) {
   console.log(userObj.reservationObject.startdate);
   console.log(userObj.reservationObject.enddate);
   console.log(userObj.reservationObject.adults);
+  var result = url.parse('https://691f1bf7.ngrok.io/property/hotels');
+  console.log(result.hostname);
   request({
     "uri": "https://691f1bf7.ngrok.io/property/hotels",
     "qs": { "city": userObj.reservationObject.location, "startdate": userObj.reservationObject.startdate, "enddate": userObj.reservationObject.enddate, "numberOfAdults": userObj.reservationObject.adults, "localeCode": "en" },
@@ -502,12 +505,13 @@ function getHotelListFromText(userObj) {
       console.log('getHotelListFromText response');
       let response = {};
       let hotelList = [];
+      console.log(body);
       if(body){
       hotelList = JSON.parse(body);
       }
       console.log('Hotel List response');
       console.log(hotelList);
-      if(hotelList.length){
+      if(hotelList && hotelList.length){
       let hotelListToShow = [];
       let hotelSize = hotelList.length;
       if (hotelList.length > 10) {
