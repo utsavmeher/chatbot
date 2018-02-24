@@ -250,7 +250,7 @@ function callSendAPILocation(userObj, response, endpoint, method) {
   if (userObj.changeSearchFlag) {
     console.log('change_search - in callSendAPILocation');
     response = {
-      "text": "Previous search summary - for location : " + (userObj.reservationObject.location) + "," + userObj.reservationObject.adults + " Adults with Check In on " + convertDateFormat(userObj.reservationObject.datetime) + " (For " + userObj.reservationObject.nights + " Nights). For New Search - Please name a city " + userObj.profile.first_name + ".",
+      "text": "Previous Search summary: " + (userObj.reservationObject.location) + ", " + userObj.reservationObject.adults + " Adults with Check In on " + convertDateFormat(userObj.reservationObject.datetime) + " (For " + userObj.reservationObject.nights + " Nights).\nFor New Search - Please name a city " + userObj.profile.first_name + ".",
       "quick_replies": [
         {
           "content_type": "location"
@@ -484,6 +484,7 @@ function getUserCityFromUserInput(userObj, location) {
 
 //Get User City from Input Text
 function getHotelListFromText(userObj) {
+  let response = {};
   console.log("getHotelListFromText method");
   console.log(userObj.reservationObject.location);
   console.log(userObj.reservationObject.startdate);
@@ -496,7 +497,6 @@ function getHotelListFromText(userObj) {
   }, (err, res, body) => {
     if (!err && res.statusCode == 200) {
       console.log('getHotelListFromText response');
-      let response = {};
       let hotelList = [];
       hotelList = JSON.parse(body);
       console.log('Hotel List response');
@@ -537,7 +537,9 @@ function getHotelListFromText(userObj) {
       }
       callSendAPI(userObj.userId, response);
     } else {
-      console.error("getHotelListFromText failed:" + err);
+      response ={"text": "Server Not Available. Please try again later." }
+      callSendAPI(userObj.userId, response);
+      console.error("getHotelListFromText failed: " + err);
     }
   });
 }
