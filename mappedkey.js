@@ -3,8 +3,8 @@
  */
 var CONFIG = {
   keyMapped: {
-    "greeting":"Hello {{user_first_name}}, welcome to The Travel Bot.",
-    "welcome" : "Welcome to Travel Bot",
+    "greeting":"Hello {{user_first_name}}, Welcome to The Travel Bot Automated Experience!",
+    "welcome" : "Welcome To Travel Bot",
     "location" : "Where in the 🌍 will you be staying? Please name a city. ",
     "location1" : "Your location to book hotel is - ",
     "sorry" : "Sorry I didn't get you.",
