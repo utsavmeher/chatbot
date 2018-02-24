@@ -121,7 +121,7 @@ function handleMessage(event, userObj) {
     getStartingIntro(userObj);
   } else {
     callTypingOn(userObj.userId);
-    console.log("messege text before wit" + messageText);
+    console.log("Messege text before wit: " + messageText);
     wit.message(messageText).then(({ entities }) => {
       console.log('Wit Response');
       console.log(entities);
@@ -469,7 +469,7 @@ function getUserCityFromUserInput(userObj, location) {
       let address = body.results[0].formatted_address;
       console.log(body.results[0].formatted_address);
       let city = address.substr(0, address.indexOf(','));
-      let state = address.substr(1, address.indexOf(','));
+      let state = address.substr(0, address.indexOf(','));
       userObj.tempQuestion = 'getDate';
       console.log('tempQuestion = getDate');
       userObj.reservationObject["location"] = city;
