@@ -1,6 +1,7 @@
 
 var ENV = require('./config.js');
 var date = require('./date.js');
+var service = require('./service.js');
 const request = require('request');
 
 module.exports = {
@@ -22,7 +23,7 @@ getUserCity: function(userObj, lat, long) {
       let response = date.getDateQuickReplies(userObj);
       userObj.tempQuestion = 'getDate';
       console.log('tempQuestion = getDate');
-      callSendAPI(userObj.userId, response);
+      service.callSendAPI(userObj.userId, response);
     } else {
       console.error("getUserCity failed:" + err);
     }
@@ -48,7 +49,7 @@ getUserCityFromUserInput: function(userObj, location) {
       userObj.reservationObject["locationState"] = state;
       let response = date.getDateQuickReplies(userObj);
       console.log('Fetch City from Input - ' + city);
-      callSendAPI(userObj.userId, response);
+      service.callSendAPI(userObj.userId, response);
     } else {
       console.error("getUserCityFromUserInput failed:" + err);
     }

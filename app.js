@@ -10,6 +10,7 @@ var sleep = require('thread-sleep');
 var User = require('./user-class.js');
 var date = require('./date.js');
 var service = require('./service.js');
+var location = require('./location.js');
 var initialize = require('./initialize.js');
 var _ = require('underscore');
 const request = require('request'),
@@ -110,7 +111,7 @@ function handleMessage(event, userObj) {
   console.log(messageAttachments);
   if (messageAttachments) {
     if (messageAttachments[0].payload.coordinates) {
-      getUserCity(userObj, messageAttachments[0].payload.coordinates.lat, messageAttachments[0].payload.coordinates.long);
+      location.getUserCity(userObj, messageAttachments[0].payload.coordinates.lat, messageAttachments[0].payload.coordinates.long);
     }
   } else if(messageText == "Future date"){
     response = { "text": "Please enter a future date." };
@@ -148,7 +149,7 @@ function handleMessage(event, userObj) {
           userObj.tempQuestion = 'getLocation';
           console.log('tempQuestion = getLocation');
         } else if (userObj.tempQuestion == 'getLocation' && location && location.confidence > 0.87) {
-          getUserCityFromUserInput(userObj, location.value);
+          location.getUserCityFromUserInput(userObj, location.value);
         } else if (userObj.tempQuestion == 'getDate' && datetime && datetime.confidence > 0.9) {
           response = { "text": CONFIG.keyMapped['guests'] };
           console.log("Inside getdate condition " + datetime.value)
@@ -167,7 +168,7 @@ function handleMessage(event, userObj) {
             userObj.reservationObject["nights"] = number.value;
             date.getCheckInCheckOut(userObj);
             response = getShowResults(userObj);
-            callSendAPI(userObj.userId, response);
+            service.callSendAPI(userObj.userId, response);
             response = getHotelListFromText(userObj);
             console.log(userObj.reservationObject);
             userObj.tempStore = '';
@@ -178,7 +179,7 @@ function handleMessage(event, userObj) {
           response = { "text": CONFIG.keyMapped['sorry'] };
         }
       }
-      callSendAPI(userObj.userId, response);
+      service.callSendAPI(userObj.userId, response);
     });
   }
 }
@@ -209,7 +210,7 @@ function handlePostback(event, userObj) {
         }
       ]
     };
-    callSendAPI(userObj.userId, response);
+    service.callSendAPI(userObj.userId, response);
   }
 }
 function convertDateFormat(inputDate) {
@@ -323,7 +324,7 @@ function getStartingIntro(userObj) {
       };
       userObj.tempQuestion = 'getStarted';
       console.log('tempQuestion = getStarted');
-      callSendAPI(userObj.userId, response);
+      service.callSendAPI(userObj.userId, response);
 }
 
 // Send the Typing Message request to the Messenger Platform
@@ -348,59 +349,6 @@ function callTypingOn(sender_psid) {
       console.log('callTypingOn Response');
     } else {
       console.error("callTypingOn Unable to send message:" + err);
-    }
-  });
-}
-
-//Get User City from Lat and Long
-function getUserCity(userObj, lat, long) {
-  request({
-    "uri": "https://maps.googleapis.com/maps/api/geocode/json",
-    "qs": { "key": ENV.config['GOOGLE_API_KEY'], "sensor": false, "latlng": '' + lat + ',' + long },
-    "method": "GET"
-  }, (err, res, body) => {
-    if (!err) {
-      console.log('getUserCity response');
-      var body = JSON.parse(body);
-      var size = body.results[0].address_components.length;
-      let city = body.results[0].address_components[size - 4].short_name;
-      let state = body.results[0].address_components[size - 3].short_name;
-      userObj.reservationObject["location"] = city;
-      userObj.reservationObject["locationState"] = state;
-      let response = date.getDateQuickReplies(userObj);
-      userObj.tempQuestion = 'getDate';
-      console.log('tempQuestion = getDate');
-      callSendAPI(userObj.userId, response);
-    } else {
-      console.error("getUserCity failed:" + err);
-    }
-  });
-}
-
-
-//Get User City from Input Text
-function getUserCityFromUserInput(userObj, location) {
-  request({
-    "uri": "https://maps.googleapis.com/maps/api/geocode/json",
-    "qs": { "key": ENV.config['GOOGLE_API_KEY'], "address": location },
-    "method": "GET"
-  }, (err, res, body) => {
-    if (!err) {
-      console.log('getUserCityFromUserInput response');
-      var body = JSON.parse(body);
-      console.log(body.results[0].address_components);
-      var size = body.results[0].address_components.length;
-      let city = body.results[0].address_components[size - 3].short_name;
-      let state = body.results[0].address_components[size - 2].short_name;
-      userObj.tempQuestion = 'getDate';
-      console.log('tempQuestion = getDate');
-      userObj.reservationObject["location"] = city;
-      userObj.reservationObject["locationState"] = state;
-      let response = date.getDateQuickReplies(userObj);
-      console.log('Fetch City from Input - ' + city);
-      callSendAPI(userObj.userId, response);
-    } else {
-      console.error("getUserCityFromUserInput failed:" + err);
     }
   });
 }
@@ -458,10 +406,10 @@ function getHotelListFromText(userObj) {
       } else {
         response ={"text": "No Hotels found for above search criteria." }
       }
-      callSendAPI(userObj.userId, response);
+      service.callSendAPI(userObj.userId, response);
     } else {
       response ={"text": "Server Not Available. Please try again later." }
-      callSendAPI(userObj.userId, response);
+      service.callSendAPI(userObj.userId, response);
       console.error("getHotelListFromText failed: " + err);
     }
   });
@@ -491,30 +439,4 @@ function getShowResults(userObj) {
     }
   };
   return response;
-}
-
-// Sends response messages to facebook via the Send API
-function callSendAPI(sender_psid, response, endpoint, method) {
-  endpoint = endpoint || 'messages';
-  method = method || 'POST';
-  let request_body = {
-    "messaging_type": "RESPONSE",
-    "recipient": {
-      "id": sender_psid
-    },
-    "message": response
-  };
-  // Send the HTTP request to the Messenger Platform
-  request({
-    "uri": `https://graph.facebook.com/v2.11/me/` + `${endpoint}`,
-    "qs": { "access_token": PAGE_ACCESS_TOKEN },
-    "method": method,
-    "json": request_body
-  }, (err, res, body) => {
-    if (!err) {
-      console.log('callSendAPI Response', body);
-    } else {
-      console.error("callSendAPI Unable to send message:" + err);
-    }
-  });
 }
