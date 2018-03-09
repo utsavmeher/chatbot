@@ -96,8 +96,6 @@ app.post('/webhook', function (req, res) {
 
 // Handles messages events
 function handleMessage(event, userObj) {
-  var _this = this;
-  console.log(_this);
   console.log('handleMessage event');
   let response;
   var messageText = event.message.text;
@@ -108,18 +106,18 @@ function handleMessage(event, userObj) {
   console.log(messageAttachments);
   if (messageAttachments) {
     if (messageAttachments[0].payload.coordinates) {
-      _this.getUserCity(userObj, messageAttachments[0].payload.coordinates.lat, messageAttachments[0].payload.coordinates.long);
+      getUserCity(userObj, messageAttachments[0].payload.coordinates.lat, messageAttachments[0].payload.coordinates.long);
     }
   } else if(messageText == "Future date"){
     response = { "text": "Please enter a future date." };
     userObj.tempQuestion = 'getDate';
-    _this.callSendAPI(userObj.userId, response);
+    callSendAPI(userObj.userId, response);
   } else if (messageText == "Start Over") {
     userObj.changeSearchFlag = false;
     userObj.reservationObject = {};
-    _this.getStartingIntro(userObj);
+    getStartingIntro(userObj);
   } else {
-    _this.callTypingOn(userObj.userId);
+    callTypingOn(userObj.userId);
     console.log("Messege text before wit: " + messageText);
     wit.message(messageText).then(({ entities }) => {
       console.log('Wit Response');
@@ -129,10 +127,10 @@ function handleMessage(event, userObj) {
         userObj.reservationObject["adults"] = entities.number[0].value;
         userObj.reservationObject["nights"] = entities.number[1].value;
         userObj.reservationObject["datetime"] = entities.datetime[0].value;
-        _this.getCheckInCheckOut(userObj);
-        response = _this.getShowResults(userObj);
-        _this.callSendAPI(userObj.userId, response);
-        response = _this.getHotelListFromText(userObj);
+        getCheckInCheckOut(userObj);
+        response = getShowResults(userObj);
+        callSendAPI(userObj.userId, response);
+        response = getHotelListFromText(userObj);
         console.log(userObj.reservationObject);
       } else {
         const intent = firstEntity(entities, 'intent');
@@ -146,7 +144,7 @@ function handleMessage(event, userObj) {
           userObj.tempQuestion = 'getLocation';
           console.log('tempQuestion = getLocation');
         } else if (userObj.tempQuestion == 'getLocation' && location && location.confidence > 0.87) {
-          _this.getUserCityFromUserInput(userObj, location.value);
+          getUserCityFromUserInput(userObj, location.value);
         } else if (userObj.tempQuestion == 'getDate' && datetime && datetime.confidence > 0.9) {
           response = { "text": CONFIG.keyMapped['guests'] };
           console.log("Inside getdate condition " + datetime.value)
@@ -163,10 +161,10 @@ function handleMessage(event, userObj) {
             console.log('tempQuestion = getNights');
           } else if (userObj.tempStore == 'nights' && userObj.tempQuestion == 'getNights') {
             userObj.reservationObject["nights"] = number.value;
-            _this.getCheckInCheckOut(userObj);
-            response = _this.getShowResults(userObj);
-            _this.callSendAPI(userObj.userId, response);
-            response = _this.getHotelListFromText(userObj);
+            getCheckInCheckOut(userObj);
+            response = getShowResults(userObj);
+            callSendAPI(userObj.userId, response);
+            response = getHotelListFromText(userObj);
             console.log(userObj.reservationObject);
             userObj.tempStore = '';
             userObj.tempQuestion = '';
@@ -176,7 +174,7 @@ function handleMessage(event, userObj) {
           response = { "text": CONFIG.keyMapped['sorry'] };
         }
       }
-      _this.callSendAPI(userObj.userId, response);
+      callSendAPI(userObj.userId, response);
     });
   }
 }
@@ -193,12 +191,12 @@ function handlePostback(event, userObj) {
   if (event.postback.payload === 'Start') {
     userObj.changeSearchFlag = false;
     userObj.reservationObject = {};
-    _this.getStartingIntro(userObj);
+    getStartingIntro(userObj);
   } else if (event.postback.payload === 'find_hotels' || event.postback.payload === 'change_search') {
     if (event.postback.payload === 'change_search') {
       userObj.changeSearchFlag = true;
     }
-    _this.callSendAPILocation(userObj, response);
+    callSendAPILocation(userObj, response);
   } else if (event.postback.payload == 'did_you_know') {
     let response = {
       "text": CONFIG.keyMapped['didYouKnow'],
@@ -210,7 +208,7 @@ function handlePostback(event, userObj) {
         }
       ]
     };
-    _this.callSendAPI(userObj.userId, response);
+    callSendAPI(userObj.userId, response);
   }
 }
 function convertDateFormat(inputDate) {
@@ -226,7 +224,7 @@ function callSendAPILocation(userObj, response, endpoint, method) {
   if (userObj.changeSearchFlag) {
     console.log('change_search - in callSendAPILocation');
     response = {
-      "text": "Previous Search summary: " + (userObj.reservationObject.location) + ", " + userObj.reservationObject.adults + " Adults with Check In on " + _this.convertDateFormat(userObj.reservationObject.datetime) + " (For " + userObj.reservationObject.nights + " Nights).\nFor New Search - Please name a city " + userObj.profile.first_name + ".",
+      "text": "Previous Search summary: " + (userObj.reservationObject.location) + ", " + userObj.reservationObject.adults + " Adults with Check In on " + convertDateFormat(userObj.reservationObject.datetime) + " (For " + userObj.reservationObject.nights + " Nights).\nFor New Search - Please name a city " + userObj.profile.first_name + ".",
       "quick_replies": [
         {
           "content_type": "location"
