@@ -33,6 +33,7 @@ getCheckInCheckOut: function(userObj) {
   console.log("Arrival date inside formattor: " + userObj.reservationObject.datetime);
   var checkInDate = new Date(userObj.reservationObject.datetime);
   var checkOutDate = new Date(userObj.reservationObject.datetime);
+  checkInDate.setDate(checkInDate.getDate()+1);
   checkOutDate.setDate(checkInDate.getDate() + userObj.reservationObject.nights);
   var checkInDD = checkInDate.getDate();
   var checkInMM = checkInDate.getMonth() + 1;

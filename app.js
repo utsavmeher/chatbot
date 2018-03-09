@@ -302,9 +302,8 @@ function getStartingIntro(userObj) {
 function getHotelListFromText(userObj) {
   let response = {};
   console.log("getHotelListFromText method");
-  console.log(userObj.reservationObject.location + ' ' + userObj.reservationObject.startdate + ' ' + userObj.reservationObject.enddate + ' ' + userObj.reservationObject.adults);
-
   userObj.reservationObject.location = userObj.reservationObject.location?userObj.reservationObject.location:userObj.reservationObject.locationState;
+  console.log(userObj.reservationObject.location + ' ' + userObj.reservationObject.startdate + ' ' + userObj.reservationObject.enddate + ' ' + userObj.reservationObject.adults);
   request({
     "uri": "https://691f1bf7.ngrok.io/property/hotels",
     "qs": { "city": userObj.reservationObject.location, "startdate": userObj.reservationObject.startdate, "enddate": userObj.reservationObject.enddate, "numberOfAdults": userObj.reservationObject.adults, "localeCode": "en" },
