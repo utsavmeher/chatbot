@@ -359,7 +359,7 @@ function getShowResults(userObj) {
       "type": "template",
       "payload": {
         "template_type": "button",
-        "text": "Showing results for " + (userObj.reservationObject.location) + ", " + userObj.reservationObject.adults + " Adults with Check In on " + convertDateFormat(userObj.reservationObject.datetime) + " (For " + userObj.reservationObject.nights + " Nights).",
+        "text": "Showing results for " + userObj.reservationObject.location + userObj.reservationObject.locationState + " for "+userObj.reservationObject.adults + " Adults with Check In on " + convertDateFormat(userObj.reservationObject.datetime) + " (For " + userObj.reservationObject.nights + " Nights).",
         "buttons": [
           {
             "type": "postback",
