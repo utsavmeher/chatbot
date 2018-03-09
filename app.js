@@ -219,13 +219,14 @@ function convertDateFormat(inputDate) {
 
 // Sends Location response to facebook via the Send API
 function callSendAPILocation(userObj, response, endpoint, method) {
+  var _this = this;
   endpoint = endpoint || 'messages';
   method = method || 'POST';
   console.log(userObj);
   if (userObj.changeSearchFlag) {
     console.log('change_search - in callSendAPILocation');
     response = {
-      "text": "Previous Search summary: " + (userObj.reservationObject.location) + ", " + userObj.reservationObject.adults + " Adults with Check In on " + convertDateFormat(userObj.reservationObject.datetime) + " (For " + userObj.reservationObject.nights + " Nights).\nFor New Search - Please name a city " + userObj.profile.first_name + ".",
+      "text": "Previous Search summary: " + (userObj.reservationObject.location) + ", " + userObj.reservationObject.adults + " Adults with Check In on " + _this.convertDateFormat(userObj.reservationObject.datetime) + " (For " + userObj.reservationObject.nights + " Nights).\nFor New Search - Please name a city " + userObj.profile.first_name + ".",
       "quick_replies": [
         {
           "content_type": "location"
