@@ -15,12 +15,14 @@ getUserCity: function(userObj, lat, long) {
     if (!err) {
       console.log('getUserCity response');
       var body = JSON.parse(body);
-      console.log(body.results[0]);
-      var size = body.results[0].address_components.length;
-      let city = body.results[0].address_components[size - 4].short_name;
-      let state = body.results[0].address_components[size - 3].short_name;
-      userObj.reservationObject["location"] = city;
-      userObj.reservationObject["locationState"] = state;
+      console.log(body.results[0].formatted_address);
+      // var size = body.results[0].address_components.length;
+      // let city = body.results[0].address_components[size - 4].short_name;
+      // let state = body.results[0].address_components[size - 3].short_name;
+      var string =body.results[0].formatted_address;
+	    var array = string.split(",");
+      userObj.reservationObject["location"] = array[array.length-3];
+      userObj.reservationObject["locationState"] = array[array.length-2];
       let response = date.getDateQuickReplies(userObj);
       userObj.tempQuestion = 'getDate';
       console.log('tempQuestion = getDate');
@@ -41,12 +43,14 @@ getUserCityFromUserInput: function(userObj, location) {
       console.log('getUserCityFromUserInput response');
       var body = JSON.parse(body);
       console.log(body.results[0]);
-      var size = body.results[0].address_components.length;
-      let city = body.results[0].address_components[size - 3].short_name;
-      let state = body.results[0].address_components[size - 2].short_name;
+      // var size = body.results[0].address_components.length;
+      // let city = body.results[0].address_components[size - 3].short_name;
+      // let state = body.results[0].address_components[size - 2].short_name;
+      var string =body.results[0].formatted_address;
+	    var array = string.split(",");
+      userObj.reservationObject["location"] = array[array.length-3];
+      userObj.reservationObject["locationState"] = array[array.length-2];
       userObj.tempQuestion = 'getDate';
-      userObj.reservationObject["location"] = city;
-      userObj.reservationObject["locationState"] = state;
       let response = date.getDateQuickReplies(userObj);
       service.callSendAPI(userObj.userId, response);
     } else {
