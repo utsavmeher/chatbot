@@ -18,7 +18,7 @@ getUserCity: function(userObj, lat, long) {
       console.log(body.results[0].address_components);
       for (let i = 0; i < body.results[0].address_components.length; i++) {
         if(body.results[0].address_components[i].types[0] == "locality"){
-          userObj.reservationObject["location"]=(body.results[0].address_components[i].long_name==undefined);
+          userObj.reservationObject["location"]=body.results[0].address_components[i].long_name;
         }
         if(body.results[0].address_components[i].types[0] == "administrative_area_level_1"){
           userObj.reservationObject["locationState"] = body.results[0].address_components[i].long_name;
