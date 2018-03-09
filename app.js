@@ -103,11 +103,7 @@ function handleMessage(event, userObj) {
   console.log('handleMessage event');
   let response;
   var messageText = event.message.text;
-  console.log('messageText');
-  console.log(messageText);
   var messageAttachments = event.message.attachments;
-  console.log('messageAttachments');
-  console.log(messageAttachments);
   if (messageAttachments) {
     if (messageAttachments[0].payload.coordinates) {
       locationService.getUserCity(userObj, messageAttachments[0].payload.coordinates.lat, messageAttachments[0].payload.coordinates.long);
@@ -187,8 +183,6 @@ function handlePostback(event, userObj) {
   var message = event.message;
   console.log('handlePostback event');
   let response;
-  console.log('event.postback.payload');
-  console.log(event.postback.payload);
   if (event.postback.payload === 'Start') {
     userObj.changeSearchFlag = false;
     userObj.reservationObject = {};
@@ -220,7 +214,6 @@ function convertDateFormat(inputDate) {
 function callSendAPILocation(userObj, response, endpoint, method) {
   endpoint = endpoint || 'messages';
   method = method || 'POST';
-  console.log(userObj);
   if (userObj.changeSearchFlag) {
     console.log('change_search - in callSendAPILocation');
     response = {
@@ -294,7 +287,6 @@ function getStartingIntro(userObj) {
         }
       };
       userObj.tempQuestion = 'getStarted';
-      console.log('tempQuestion = getStarted');
       service.callSendAPI(userObj.userId, response);
 }
 
@@ -314,7 +306,6 @@ function getHotelListFromText(userObj) {
       let hotelList = [];
       hotelList = JSON.parse(body);
       console.log('Hotel List response');
-      console.log(hotelList);
       if(hotelList && hotelList.length){
       let hotelListToShow = [];
       let hotelSize = hotelList.length;
@@ -345,7 +336,6 @@ function getHotelListFromText(userObj) {
         }
       };
       response = JSON.stringify(response);
-      console.log('senderID', userObj.userId);
       } else {
         response ={"text": "No Hotels found for above search criteria." }
       }

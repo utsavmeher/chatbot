@@ -1,3 +1,6 @@
+/**
+ * @author Utsav Meher <utsavm@xpanxion.co.in>
+ */
 var CONFIG = require('./mappedkey.js');
 var ENV = require('./config.js');
 const request = require('request');

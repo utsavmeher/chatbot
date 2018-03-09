@@ -1,4 +1,6 @@
-
+/**
+ * @author Utsav Meher <utsavm@xpanxion.co.in>
+ */
 var ENV = require('./config.js');
 var date = require('./date.js');
 var service = require('./service.js');
@@ -15,7 +17,6 @@ getUserCity: function(userObj, lat, long) {
     if (!err) {
       console.log('getUserCity response');
       var body = JSON.parse(body);
-      console.log(body.results[0].address_components);
       for (let i = 0; i < body.results[0].address_components.length; i++) {
         if(body.results[0].address_components[i].types[0] == "locality"){
           userObj.reservationObject["location"]=body.results[0].address_components[i].long_name;
@@ -43,7 +44,6 @@ getUserCityFromUserInput: function(userObj, location) {
     if (!err) {
       console.log('getUserCityFromUserInput response');
       var body = JSON.parse(body);
-      console.log(body.results[0].address_components);
       for (let i = 0; i < body.results[0].address_components.length; i++) {
         if(body.results[0].address_components[i].types[0] == "locality"){
           userObj.reservationObject["location"]=body.results[0].address_components[i].long_name;

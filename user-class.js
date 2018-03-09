@@ -1,3 +1,6 @@
+/**
+ * @author Utsav Meher <utsavm@xpanxion.co.in>
+ */
 (function() {
     'use strict';
     //User object will store activity of particular user and behave like use session  
