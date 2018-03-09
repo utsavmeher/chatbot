@@ -3,10 +3,10 @@ var CONFIG = require('./mappedkey.js');
 module.exports = {
 // Sends Date Quick Reples via the Send API
 getDateQuickReplies: function(userObj) {
-  userObj.state = userObj.reservationObject.locationState ? ', ' + userObj.reservationObject.locationState : "";
-  userObj.reservationObject.location = userObj.reservationObject.location?userObj.reservationObject.location:"";
+  userObj.reservationObject.locationState = userObj.reservationObject.locationState ? userObj.reservationObject.locationState : "";
+  userObj.reservationObject.location = userObj.reservationObject.location?userObj.reservationObject.location + ', ':"";
   let response = {
-    "text": CONFIG.keyMapped['location1'] + userObj.reservationObject.location + userObj.state + "\n" + CONFIG.keyMapped['date'],
+    "text": CONFIG.keyMapped['location1'] + userObj.reservationObject.location + userObj.reservationObject.locationState + "\n" + CONFIG.keyMapped['date'],
     "quick_replies": [
       {
         "content_type": "text",

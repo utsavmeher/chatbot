@@ -9,7 +9,6 @@
         this.reservationObject = {};
         this.tempQuestion = '';
         this.tempStore = '';
-        this.state='';
         this.changeSearchFlag = false;
     }
     module.exports = User;
