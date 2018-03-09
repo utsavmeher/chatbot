@@ -139,7 +139,7 @@ function handleMessage(event, userObj) {
         const number = firstEntity(entities, 'number');
         const datetime = firstEntity(entities, 'datetime');
         console.log('User Temp Ques');
-        console.log(userObj.tempQuestion);
+        console.log(userObj);
         console.log('changeSearchFlag: ' + userObj.changeSearchFlag);
         if (greetings && greetings.confidence > 0.9) {
           response = { "text": "Hello " + userObj.profile.first_name + "," + CONFIG.keyMapped['welcome'] + ' ' + CONFIG.keyMapped['location'] };
