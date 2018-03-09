@@ -8,6 +8,7 @@ var ENV = require('./config.js');
 var CONFIG = require('./mappedkey.js');
 var sleep = require('thread-sleep');
 var User = require('./user-class.js');
+var date = require('./date.js');
 var _ = require('underscore');
 const request = require('request'),
       express = require('express'),
@@ -128,7 +129,7 @@ function handleMessage(event, userObj) {
         userObj.reservationObject["adults"] = entities.number[0].value;
         userObj.reservationObject["nights"] = entities.number[1].value;
         userObj.reservationObject["datetime"] = entities.datetime[0].value;
-        getCheckInCheckOut(userObj);
+        date.getCheckInCheckOut(userObj);
         response = getShowResults(userObj);
         callSendAPI(userObj.userId, response);
         response = getHotelListFromText(userObj);
@@ -162,7 +163,7 @@ function handleMessage(event, userObj) {
             console.log('tempQuestion = getNights');
           } else if (userObj.tempStore == 'nights' && userObj.tempQuestion == 'getNights') {
             userObj.reservationObject["nights"] = number.value;
-            getCheckInCheckOut(userObj);
+            date.getCheckInCheckOut(userObj);
             response = getShowResults(userObj);
             callSendAPI(userObj.userId, response);
             response = getHotelListFromText(userObj);
