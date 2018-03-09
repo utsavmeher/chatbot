@@ -10,7 +10,7 @@ var sleep = require('thread-sleep');
 var User = require('./user-class.js');
 var date = require('./date.js');
 var service = require('./service.js');
-var location = require('./location.js');
+var locationService = require('./location.js');
 var initialize = require('./initialize.js');
 var _ = require('underscore');
 const request = require('request'),
@@ -111,7 +111,7 @@ function handleMessage(event, userObj) {
   console.log(messageAttachments);
   if (messageAttachments) {
     if (messageAttachments[0].payload.coordinates) {
-      location.getUserCity(userObj, messageAttachments[0].payload.coordinates.lat, messageAttachments[0].payload.coordinates.long);
+      locationService.getUserCity(userObj, messageAttachments[0].payload.coordinates.lat, messageAttachments[0].payload.coordinates.long);
     }
   } else if(messageText == "Future date"){
     response = { "text": "Please enter a future date." };
@@ -149,7 +149,7 @@ function handleMessage(event, userObj) {
           userObj.tempQuestion = 'getLocation';
           console.log('tempQuestion = getLocation');
         } else if (userObj.tempQuestion == 'getLocation' && location && location.confidence > 0.87) {
-          location.getUserCityFromUserInput(userObj, location.value);
+          locationService.getUserCityFromUserInput(userObj, location.value);
         } else if (userObj.tempQuestion == 'getDate' && datetime && datetime.confidence > 0.9) {
           response = { "text": CONFIG.keyMapped['guests'] };
           console.log("Inside getdate condition " + datetime.value)

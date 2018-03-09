@@ -15,7 +15,7 @@ getUserCity: function(userObj, lat, long) {
     if (!err) {
       console.log('getUserCity response');
       var body = JSON.parse(body);
-      console.log
+      console.log(body.results[0]);
       var size = body.results[0].address_components.length;
       let city = body.results[0].address_components[size - 4].short_name;
       let state = body.results[0].address_components[size - 3].short_name;
@@ -40,16 +40,14 @@ getUserCityFromUserInput: function(userObj, location) {
     if (!err) {
       console.log('getUserCityFromUserInput response');
       var body = JSON.parse(body);
-      console.log(body.results[0].address_components);
+      console.log(body.results[0]);
       var size = body.results[0].address_components.length;
       let city = body.results[0].address_components[size - 3].short_name;
       let state = body.results[0].address_components[size - 2].short_name;
       userObj.tempQuestion = 'getDate';
-      console.log('tempQuestion = getDate');
       userObj.reservationObject["location"] = city;
       userObj.reservationObject["locationState"] = state;
       let response = date.getDateQuickReplies(userObj);
-      console.log('Fetch City from Input - ' + city);
       service.callSendAPI(userObj.userId, response);
     } else {
       console.error("getUserCityFromUserInput failed:" + err);
