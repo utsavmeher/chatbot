@@ -19,6 +19,14 @@ getUserCity: function(userObj, lat, long) {
       var size = body.results[0].address_components.length;
       let city = body.results[0].address_components[size - 4].short_name;
       let state = body.results[0].address_components[size - 3].short_name;
+      for (let i = 0; i < body.results[0].address_components.length; i++) {
+        if(body.results[0].address_components[i].types[0] == "locality"){
+          userObj.reservationObject["location"]=body.results[0].address_components[i].short_name;
+        }
+        if(body.results[0].address_components[i].types[0] == "administrative_area_level_1"){
+          userObj.reservationObject["locationState"] = body.results[0].address_components[i].short_name;
+        }
+      }
       userObj.reservationObject["location"] = city;
       userObj.reservationObject["locationState"] = state;
       let response = date.getDateQuickReplies(userObj);

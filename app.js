@@ -54,7 +54,6 @@ app.post('/webhook', function (req, res) {
       pageEntry.messaging.forEach(function (messagingEvent) {
         console.log("Inside Page Entry, User ID: " + messagingEvent.sender.id);
         var userId =  messagingEvent.sender.id;
-        service.callTypingOn(userId);
         var userObj = _.findWhere(activeUsers, {
                 userId: userId.toString()
             });
@@ -122,7 +121,7 @@ function handleMessage(event, userObj) {
     userObj.reservationObject = {};
     getStartingIntro(userObj);
   } else {
-    // callTypingOn(userObj.userId);
+    service.callTypingOn(userObj.userId);
     console.log("Messege text before wit: " + messageText);
     wit.message(messageText).then(({ entities }) => {
       console.log('Wit Response');
