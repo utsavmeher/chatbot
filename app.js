@@ -138,12 +138,15 @@ function handleMessage(event, userObj) {
         const location = firstEntity(entities, 'location');
         const number = firstEntity(entities, 'number');
         const datetime = firstEntity(entities, 'datetime');
+        console.log('User Temp Ques');
+        console.log(userObj.tempQuestion);
         console.log('changeSearchFlag: ' + userObj.changeSearchFlag);
         if (greetings && greetings.confidence > 0.9) {
           response = { "text": "Hello " + userObj.profile.first_name + "," + CONFIG.keyMapped['welcome'] + ' ' + CONFIG.keyMapped['location'] };
           userObj.tempQuestion = 'getLocation';
           console.log('tempQuestion = getLocation');
-        } else if (userObj.tempQuestion == 'getLocation' && location && location.confidence > 0.87) {
+        } else if (userObj.tempQuestion == 'getLocation' && location && location.confidence > 0.8) {
+          console.log('Inside location');
           locationService.getUserCityFromUserInput(userObj, location.value);
         } else if (userObj.tempQuestion == 'getDate' && datetime && datetime.confidence > 0.9) {
           response = { "text": CONFIG.keyMapped['guests'] };
