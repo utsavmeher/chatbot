@@ -28,13 +28,10 @@ app.listen(process.env.PORT || 5000, () => console.log('Webhook is listening'));
 // Accepts GET requests at the /webhook endpoint
 app.get('/webhook', (req, res) => {
   const VERIFY_TOKEN = "randomrandom";
-  let mode = req.query['hub.mode'];
-  let token = req.query['hub.verify_token'];
-  let challenge = req.query['hub.challenge'];
-  if (mode && token) {
-    if (mode === 'subscribe' && token === VERIFY_TOKEN) {
+  if (req.query['hub.mode'] && req.query['hub.verify_token']) {
+    if (req.query['hub.mode'] === 'subscribe' && req.query['hub.verify_token'] === VERIFY_TOKEN) {
       console.log('WEBHOOK_VERIFIED');
-      res.status(200).send(challenge);
+      res.status(200).send(req.query['hub.challenge']);
       getStarted();
       greeting();
     } else {
@@ -100,6 +97,7 @@ app.post('/webhook', function (req, res) {
 // Handles messages events
 function handleMessage(event, userObj) {
   var _this = this;
+  console.log(_this);
   console.log('handleMessage event');
   let response;
   var messageText = event.message.text;
@@ -185,6 +183,8 @@ function handleMessage(event, userObj) {
 // Handles messaging_postbacks events
 function handlePostback(event, userObj) {
   var _this = this;
+  console.log('this value:')
+  console.log(this);
   var message = event.message;
   console.log('handlePostback event');
   let response;
