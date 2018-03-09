@@ -25,6 +25,7 @@ getUserCity: function(userObj, lat, long) {
           userObj.reservationObject["locationState"] = body.results[0].address_components[i].long_name;
         }
       }
+      userObj.reservationObject["city"] = userObj.reservationObject.location?userObj.reservationObject.location:userObj.reservationObject.locationState;
       let response = date.getDateQuickReplies(userObj);
       userObj.tempQuestion = 'getDate';
       console.log('tempQuestion = getDate');
@@ -52,6 +53,7 @@ getUserCityFromUserInput: function(userObj, location) {
           userObj.reservationObject["locationState"] = body.results[0].address_components[i].long_name;
         }
       }
+      userObj.reservationObject["city"] = userObj.reservationObject.location?userObj.reservationObject.location:userObj.reservationObject.locationState;
       userObj.tempQuestion = 'getDate';
       let response = date.getDateQuickReplies(userObj);
       service.callSendAPI(userObj.userId, response);
