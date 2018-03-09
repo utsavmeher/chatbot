@@ -9,6 +9,7 @@ var CONFIG = require('./mappedkey.js');
 var sleep = require('thread-sleep');
 var User = require('./user-class.js');
 var date = require('./date.js');
+var service = require('./service.js');
 var initialize = require('./initialize.js');
 var _ = require('underscore');
 const request = require('request'),
@@ -114,7 +115,7 @@ function handleMessage(event, userObj) {
   } else if(messageText == "Future date"){
     response = { "text": "Please enter a future date." };
     userObj.tempQuestion = 'getDate';
-    callSendAPI(userObj.userId, response);
+    service.callSendAPI(userObj.userId, response);
   } else if (messageText == "Start Over") {
     userObj.changeSearchFlag = false;
     userObj.reservationObject = {};
@@ -132,7 +133,7 @@ function handleMessage(event, userObj) {
         userObj.reservationObject["datetime"] = entities.datetime[0].value;
         date.getCheckInCheckOut(userObj);
         response = getShowResults(userObj);
-        callSendAPI(userObj.userId, response);
+        service.callSendAPI(userObj.userId, response);
         response = getHotelListFromText(userObj);
         console.log(userObj.reservationObject);
       } else {
@@ -366,7 +367,7 @@ function getUserCity(userObj, lat, long) {
       let state = body.results[0].address_components[size - 3].short_name;
       userObj.reservationObject["location"] = city;
       userObj.reservationObject["locationState"] = state;
-      let response = getDateQuickReplies(userObj);
+      let response = date.getDateQuickReplies(userObj);
       userObj.tempQuestion = 'getDate';
       console.log('tempQuestion = getDate');
       callSendAPI(userObj.userId, response);
@@ -395,7 +396,7 @@ function getUserCityFromUserInput(userObj, location) {
       console.log('tempQuestion = getDate');
       userObj.reservationObject["location"] = city;
       userObj.reservationObject["locationState"] = state;
-      let response = getDateQuickReplies(userObj);
+      let response = date.getDateQuickReplies(userObj);
       console.log('Fetch City from Input - ' + city);
       callSendAPI(userObj.userId, response);
     } else {

@@ -1,6 +1,11 @@
 
+var ENV = require('./config.js');
+var date = require('./date.js');
+const request = require('request');
+
+module.exports = {
 //Get User City from Lat and Long
-function getUserCity(userObj, lat, long) {
+getUserCity: function(userObj, lat, long) {
   request({
     "uri": "https://maps.googleapis.com/maps/api/geocode/json",
     "qs": { "key": ENV.config['GOOGLE_API_KEY'], "sensor": false, "latlng": '' + lat + ',' + long },
@@ -14,7 +19,7 @@ function getUserCity(userObj, lat, long) {
       let state = body.results[0].address_components[size - 3].short_name;
       userObj.reservationObject["location"] = city;
       userObj.reservationObject["locationState"] = state;
-      let response = getDateQuickReplies(userObj);
+      let response = date.getDateQuickReplies(userObj);
       userObj.tempQuestion = 'getDate';
       console.log('tempQuestion = getDate');
       callSendAPI(userObj.userId, response);
@@ -22,11 +27,9 @@ function getUserCity(userObj, lat, long) {
       console.error("getUserCity failed:" + err);
     }
   });
-}
-
-
+},
 //Get User City from Input Text
-function getUserCityFromUserInput(userObj, location) {
+getUserCityFromUserInput: function(userObj, location) {
   request({
     "uri": "https://maps.googleapis.com/maps/api/geocode/json",
     "qs": { "key": ENV.config['GOOGLE_API_KEY'], "address": location },
@@ -43,11 +46,12 @@ function getUserCityFromUserInput(userObj, location) {
       console.log('tempQuestion = getDate');
       userObj.reservationObject["location"] = city;
       userObj.reservationObject["locationState"] = state;
-      let response = getDateQuickReplies(userObj);
+      let response = date.getDateQuickReplies(userObj);
       console.log('Fetch City from Input - ' + city);
       callSendAPI(userObj.userId, response);
     } else {
       console.error("getUserCityFromUserInput failed:" + err);
     }
   });
+}
 }

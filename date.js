@@ -1,4 +1,34 @@
+var CONFIG = require('./mappedkey.js');
+
 module.exports = {
+  // Sends Quick Reples response to facebook via the Send API
+getDateQuickReplies: function(userObj) {
+  userObj.state = userObj.reservationObject.locationState ? ', ' + userObj.reservationObject.locationState : "";
+  let response = {
+    "text": CONFIG.keyMapped['location1'] + userObj.reservationObject.location + userObj.state + "\n" + CONFIG.keyMapped['date'],
+    "quick_replies": [
+      {
+        "content_type": "text",
+        "title": "Today",
+        "payload": "Today"
+      },
+      {
+        "content_type": "text",
+        "title": "Tomorrow",
+        "payload": "Tomorrow"
+      },
+      {
+        "content_type": "text",
+        "title": "Future date",
+        "payload": "future"
+      }
+    ]
+  };
+  userObj.tempQuestion = 'getDate';
+  console.log('tempQuestion = getLocation');
+  return response;
+},
+  
 getCheckInCheckOut: function(userObj) {
   console.log("Arrival date inside formattor: " + userObj.reservationObject.datetime);
   var checkInDate = new Date(userObj.reservationObject.datetime);
