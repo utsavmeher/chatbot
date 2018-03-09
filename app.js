@@ -181,9 +181,6 @@ function handleMessage(event, userObj) {
 }
 // Handles messaging_postbacks events
 function handlePostback(event, userObj) {
-  var _this = this;
-  console.log('this value:')
-  console.log(this);
   var message = event.message;
   console.log('handlePostback event');
   let response;
@@ -218,7 +215,6 @@ function convertDateFormat(inputDate) {
 
 // Sends Location response to facebook via the Send API
 function callSendAPILocation(userObj, response, endpoint, method) {
-  var _this = this;
   endpoint = endpoint || 'messages';
   method = method || 'POST';
   console.log(userObj);
