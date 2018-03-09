@@ -345,6 +345,7 @@ function getHotelListFromText(userObj) {
       service.callSendAPI(userObj.userId, response);
       console.error("getHotelListFromText failed: " + err);
     }
+    userObj.reservationObject.location = '';
   });
 }
 
