@@ -9,6 +9,7 @@ var CONFIG = require('./mappedkey.js');
 var sleep = require('thread-sleep');
 var User = require('./user-class.js');
 var date = require('./date.js');
+var initialize = require('./initialize.js');
 var _ = require('underscore');
 const request = require('request'),
       express = require('express'),
@@ -33,8 +34,8 @@ app.get('/webhook', (req, res) => {
     if (req.query['hub.mode'] === 'subscribe' && req.query['hub.verify_token'] === VERIFY_TOKEN) {
       console.log('WEBHOOK_VERIFIED');
       res.status(200).send(req.query['hub.challenge']);
-      getStarted();
-      greeting();
+      initialize.getStarted();
+      initialize.greeting();
     } else {
       res.sendStatus(403);
     }
@@ -349,58 +350,6 @@ function callTypingOn(sender_psid) {
     }
   });
 }
-
-//Shows the Get Started button for the first time user.
-function getStarted() {
-  let request_body = {
-    "get_started": {
-      "payload": "Start"
-    }
-  };
-  // Send the HTTP request to the Messenger Platform
-  request({
-    "uri": "https://graph.facebook.com/v2.11/me/messenger_profile",
-    "qs": { "access_token": PAGE_ACCESS_TOKEN },
-    "method": "POST",
-    "json": request_body
-  }, (err, res, body) => {
-    if (!err) {
-      console.log('getStarted response');
-    } else {
-      console.error("getStarted failed" + err);
-    }
-  });
-}
-
-
-//Shows the Greeting Message for the first time user.
-function greeting() {
-  let request_body = {
-    "greeting": [
-      {
-        "locale": "default",
-        "text": CONFIG.keyMapped['greeting']
-      }, {
-        "locale": "en_US",
-        "text": CONFIG.keyMapped['greeting']
-      }
-    ]
-  };
-  // Send the HTTP request to the Messenger Platform
-  request({
-    "uri": "https://graph.facebook.com/v2.11/me/messenger_profile",
-    "qs": { "access_token": PAGE_ACCESS_TOKEN },
-    "method": "POST",
-    "json": request_body
-  }, (err, res, body) => {
-    if (!err) {
-      console.log('greeting response');
-    } else {
-      console.error("greeting failed:" + err);
-    }
-  });
-}
-
 
 //Get User City from Lat and Long
 function getUserCity(userObj, lat, long) {
