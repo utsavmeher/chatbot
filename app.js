@@ -54,7 +54,7 @@ app.post('/webhook', function (req, res) {
       pageEntry.messaging.forEach(function (messagingEvent) {
         console.log("Inside Page Entry, User ID: " + messagingEvent.sender.id);
         var userId =  messagingEvent.sender.id;
-        callTypingOn(userId);
+        service.callTypingOn(userId);
         var userObj = _.findWhere(activeUsers, {
                 userId: userId.toString()
             });
@@ -266,34 +266,6 @@ function callSendAPILocation(userObj, response, endpoint, method) {
   });
 }
 
-// Sends Quick Reples response to facebook via the Send API
-function getDateQuickReplies(userObj) {
-  userObj.state = userObj.reservationObject.locationState ? ', ' + userObj.reservationObject.locationState : "";
-  let response = {
-    "text": CONFIG.keyMapped['location1'] + userObj.reservationObject.location + userObj.state + "\n" + CONFIG.keyMapped['date'],
-    "quick_replies": [
-      {
-        "content_type": "text",
-        "title": "Today",
-        "payload": "Today"
-      },
-      {
-        "content_type": "text",
-        "title": "Tomorrow",
-        "payload": "Tomorrow"
-      },
-      {
-        "content_type": "text",
-        "title": "Future date",
-        "payload": "future"
-      }
-    ]
-  };
-  userObj.tempQuestion = 'getDate';
-  console.log('tempQuestion = getLocation');
-  return response;
-}
-
 // Get the first name and Shows the First Greeting Msg to the User
 function getStartingIntro(userObj) {
     let response = {
@@ -327,33 +299,7 @@ function getStartingIntro(userObj) {
       service.callSendAPI(userObj.userId, response);
 }
 
-// Send the Typing Message request to the Messenger Platform
-function callTypingOn(sender_psid) {
-  let endpoint = 'messages';
-  let method = 'POST';
-  let request_body = {
-    "messaging_type": "RESPONSE",
-    "recipient": {
-      "id": sender_psid
-    },
-    "sender_action": "typing_on"
-  };
-  // Send the HTTP request to the Messenger Platform
-  request({
-    "uri": `https://graph.facebook.com/v2.11/me/` + `${endpoint}`,
-    "qs": { "access_token": PAGE_ACCESS_TOKEN },
-    "method": method,
-    "json": request_body
-  }, (err, res, body) => {
-    if (!err) {
-      console.log('callTypingOn Response');
-    } else {
-      console.error("callTypingOn Unable to send message:" + err);
-    }
-  });
-}
-
-//Get User City from Input Text
+//Get the Available hotel List
 function getHotelListFromText(userObj) {
   let response = {};
   console.log("getHotelListFromText method");

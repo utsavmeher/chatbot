@@ -38,7 +38,6 @@ greeting: function() {
       }
     ]
   };
-  // Send the HTTP request to the Messenger Platform
   request({
     "uri": "https://graph.facebook.com/v2.11/me/messenger_profile",
     "qs": { "access_token": PAGE_ACCESS_TOKEN },

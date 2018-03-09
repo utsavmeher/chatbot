@@ -5,7 +5,7 @@ var service = require('./service.js');
 const request = require('request');
 
 module.exports = {
-//Get User City from Lat and Long
+//Get User City from Latitude and Longitude
 getUserCity: function(userObj, lat, long) {
   request({
     "uri": "https://maps.googleapis.com/maps/api/geocode/json",
@@ -15,6 +15,7 @@ getUserCity: function(userObj, lat, long) {
     if (!err) {
       console.log('getUserCity response');
       var body = JSON.parse(body);
+      console.log
       var size = body.results[0].address_components.length;
       let city = body.results[0].address_components[size - 4].short_name;
       let state = body.results[0].address_components[size - 3].short_name;

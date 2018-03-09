@@ -1,7 +1,7 @@
 var CONFIG = require('./mappedkey.js');
 
 module.exports = {
-  // Sends Quick Reples response to facebook via the Send API
+// Sends Date Quick Reples via the Send API
 getDateQuickReplies: function(userObj) {
   userObj.state = userObj.reservationObject.locationState ? ', ' + userObj.reservationObject.locationState : "";
   let response = {
@@ -25,7 +25,6 @@ getDateQuickReplies: function(userObj) {
     ]
   };
   userObj.tempQuestion = 'getDate';
-  console.log('tempQuestion = getLocation');
   return response;
 },
   
