@@ -12,6 +12,7 @@
         this.reservationObject = {};
         this.tempQuestion = '';
         this.tempStore = '';
+        this.city = '';
         this.changeSearchFlag = false;
     }
     module.exports = User;
