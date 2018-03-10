@@ -384,7 +384,7 @@ function getShowResults(userObj) {
   return response;
 }
 
-// Get the first name and Shows the First Greeting Msg to the User
+// Se
 function getSorryExcedeed(userObj) {
   console.log("getSorryExcedeed started");
   let response = {
@@ -393,7 +393,7 @@ function getSorryExcedeed(userObj) {
           "payload": {
             "template_type": "generic",
             "elements": [{
-              "title": CONFIG.keyMapped['sorry'] + ' Please ' + CONFIG.keyMapped['liveChat'],
+              "title": CONFIG.keyMapped['sorry'] + ' Please Start Over or ' + CONFIG.keyMapped['liveChat'],
               "buttons": [
                 {
                   "type": "postback",
