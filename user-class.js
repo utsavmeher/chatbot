@@ -14,6 +14,7 @@
         this.tempStore = '';
         this.city = '';
         this.changeSearchFlag = false;
+        this.sorryCount = 0;
     }
     module.exports = User;
 }());

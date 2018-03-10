@@ -175,7 +175,14 @@ function handleMessage(event, userObj) {
             console.log('tempQuestion = EMPTY');
           }
         } else {
-          response = { "text": CONFIG.keyMapped['sorry'] };
+          if(userObj.sorryCount <= 2){
+            response = { "text": CONFIG.keyMapped['sorry'] };
+            userObj.sorryCount++;
+          } else {
+            response = { "text": CONFIG.keyMapped['sorry'] + ' Please ' + CONFIG.keyMapped['liveChat']};
+            userObj.sorryCount=0;
+          }
+          
         }
       }
       service.callSendAPI(userObj.userId, response);
