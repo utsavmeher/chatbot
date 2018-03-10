@@ -143,7 +143,7 @@ function handleMessage(event, userObj) {
         console.log(userObj);
         console.log('changeSearchFlag: ' + userObj.changeSearchFlag);
         if (greetings && greetings.confidence > 0.9) {
-          response = { "text": "Hello " + userObj.profile.first_name + "," + CONFIG.keyMapped['welcome'] + ' ' + CONFIG.keyMapped['location'] };
+          response = { "text": "Hello " + userObj.profile.first_name + ", " + CONFIG.keyMapped['welcome'] + ' ' + CONFIG.keyMapped['location'] };
           userObj.tempQuestion = 'getLocation';
           console.log('tempQuestion = getLocation');
         } else if (userObj.tempQuestion == 'getLocation' && location && location.confidence > 0.8) {
@@ -361,13 +361,13 @@ function getHotelListFromText(userObj) {
 
 // get the show results message
 function getShowResults(userObj) {
-  userObj.state = userObj.reservationObject.locationState?", " +userObj.reservationObject.locationState:"";
+  userObj.state = userObj.reservationObject.locationState? userObj.reservationObject.locationState:"";
   let response = {
     "attachment": {
       "type": "template",
       "payload": {
         "template_type": "button",
-        "text": "Showing results for " + userObj.reservationObject.location + userObj.state + " for "+userObj.reservationObject.adults + " Adults with Check In on " + convertDateFormat(userObj.reservationObject.datetime) + " (For " + userObj.reservationObject.nights + " Nights).",
+        "text": "Showing results for " + userObj.reservationObject.location + " " + userObj.reservationObject.state + " for "+userObj.reservationObject.adults + " Adults with Check In on " + convertDateFormat(userObj.reservationObject.datetime) + " (For " + userObj.reservationObject.nights + " Nights).",
         "buttons": [
           {
             "type": "postback",
