@@ -175,7 +175,7 @@ function handleMessage(event, userObj) {
             console.log('tempQuestion = EMPTY');
           }
         } else {
-          if(userObj.sorryCount <= 2){
+          if(userObj.sorryCount < 1){
             response = { "text": CONFIG.keyMapped['sorry'] };
             userObj.sorryCount++;
           } else {
@@ -393,14 +393,12 @@ function getSorryExcedeed(userObj) {
           "payload": {
             "template_type": "generic",
             "elements": [{
-              "title": "Hello " + userObj.profile.first_name + "! " + CONFIG.keyMapped['welcome'],
-              "subtitle": "Tap on Find Hotels to book a reservation.",
-              "image_url": "https://cdn.glitch.com/c6c2dc22-89f9-4d15-a9bb-9d07a31dec01%2Fihg.png?1516965115124",
+              "title": CONFIG.keyMapped['sorry'] + ' Please ' + CONFIG.keyMapped['liveChat'],
               "buttons": [
                 {
                   "type": "postback",
-                  "title": CONFIG.keyMapped['findHotels'],
-                  "payload": "find_hotels"
+                  "title": "Start Over",
+                  "payload": "Start"
                 },
                 {
                   "type": "web_url",
@@ -413,26 +411,5 @@ function getSorryExcedeed(userObj) {
           }
         }
       };
-    let response = {
-    "attachment": {
-      "type": "template",
-      "payload": {
-        "template_type": "button",
-        "text": CONFIG.keyMapped['sorry'] + ' Please start over or ' + CONFIG.keyMapped['liveChat'],
-        "buttons": [
-          {
-            "type": "web_url",
-            "url": "Start",
-            "title": "Start Over"
-          },
-          {
-            "type": "web_url",
-            "url": "http://customerservice.ihg.com/ihg/bot.html?isJSEnabled=1&brandcode=6c&businessArea=Root.IHG&reservation=%5Bobject%20Object%5D&akamaiCountryCode=AU&akamaiRegion=AMEA&akamaiSubRegion=Oceania&ihgSession=&subSection=null&pageidbrand=6c_reservationhome&hotelCode=null&categoryID=6c_new%2F925%2Fen&siteCountry=gb&timeOfDayAttribute=2&pcrNumber=null&membershipStatus=null&type=home&glat=&beFreeCookieCreationDate=&urlType=https&loginType=anonymous&country=925&iata=&controllerName=reservationhome&propertyCode=null&envName=prod&siteLanguage=en&brand=6c_new&language=en&city=null&eID=null&pcrTravelType=null&contentPage=null&hotelCityStateCountryCode=&hotelBrand4Digit=null&hotelBrand=null&initiatedActualUnitPrice=null&rateType=null&initiatedCurrencyCode=null&initiatedUnitPrice=null&initialBookingTotal=null&viewport=large&orientation=landscape&edwSellSource=WEBWB",
-            "title": CONFIG.keyMapped['liveChat']
-          }
-        ]
-      }
-    }
-  };
   return response;
 }
