@@ -229,7 +229,7 @@ function callSendAPILocation(userObj, response, endpoint, method) {
   if (userObj.changeSearchFlag) {
     console.log('change_search - in callSendAPILocation');
     response = {
-      "text": "Previous Search summary: " + userObj.reservationObject.location + userObj.reservationObject.locationState+ " for " + userObj.reservationObject.adults + " Adults with Check In on " + convertDateFormat(userObj.reservationObject.datetime) + " (For " + userObj.reservationObject.nights + " Nights).\nFor New Search - Please name a city " + userObj.profile.first_name + ".",
+      "text": "Previous Search summary: " + userObj.reservationObject.location + " "+ userObj.reservationObject.locationState+ " for " + userObj.reservationObject.adults + " Adults with Check In on " + convertDateFormat(userObj.reservationObject.datetime) + " (For " + userObj.reservationObject.nights + " Nights).\nFor New Search - Please name a city " + userObj.profile.first_name + ".",
       "quick_replies": [
         {
           "content_type": "location"
@@ -361,13 +361,12 @@ function getHotelListFromText(userObj) {
 
 // get the show results message
 function getShowResults(userObj) {
-  userObj.state = userObj.reservationObject.locationState? userObj.reservationObject.locationState:"";
   let response = {
     "attachment": {
       "type": "template",
       "payload": {
         "template_type": "button",
-        "text": "Showing results for " + userObj.reservationObject.location + " " + userObj.reservationObject.state + " for "+userObj.reservationObject.adults + " Adults with Check In on " + convertDateFormat(userObj.reservationObject.datetime) + " (For " + userObj.reservationObject.nights + " Nights).",
+        "text": "Showing results for " + userObj.reservationObject.location + " " + userObj.reservationObject.locationState + " for "+userObj.reservationObject.adults + " Adults with Check In on " + convertDateFormat(userObj.reservationObject.datetime) + " (For " + userObj.reservationObject.nights + " Nights).",
         "buttons": [
           {
             "type": "postback",

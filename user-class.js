@@ -11,8 +11,6 @@
         this.lastQuestion = {}; 
         this.reservationObject = {};
         this.tempQuestion = '';
-        this.city = '';
-        this.state = '';
         this.tempStore = '';
         this.changeSearchFlag = false;
         this.sorryCount = 0;
