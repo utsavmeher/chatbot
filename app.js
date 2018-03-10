@@ -383,3 +383,23 @@ function getShowResults(userObj) {
   };
   return response;
 }
+
+// Get the first name and Shows the First Greeting Msg to the User
+function getSorryExcedeed(userObj) {
+    let response = {
+      "text": CONFIG.keyMapped['didYouKnow'],
+      "quick_replies": [
+        {
+          "content_type": "text",
+          "title": "Start Over",
+          "payload": "Start"
+        },
+        {
+          "content_type": "url",
+          "title": "Messege a Live Agent",
+          "payload": "Start"
+        }
+      ]
+    };
+    service.callSendAPI(userObj.userId, response);
+}
