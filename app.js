@@ -147,6 +147,7 @@ function handleMessage(event, userObj) {
           userObj.tempQuestion = 'getLocation';
           console.log('tempQuestion = getLocation');
         } else if (userObj.tempQuestion == 'getLocation' && location && location.confidence > 0.8) {
+          userObj.reservationObject = {};
           console.log('Inside location');
           locationService.getUserCityFromUserInput(userObj, location.value);
         } else if (userObj.tempQuestion == 'getDate' && datetime && datetime.confidence > 0.9) {
@@ -360,12 +361,13 @@ function getHotelListFromText(userObj) {
 
 // get the show results message
 function getShowResults(userObj) {
+  userObj.state = userObj.reservationObject.locationState?", " +userObj.reservationObject.locationState:"";
   let response = {
     "attachment": {
       "type": "template",
       "payload": {
         "template_type": "button",
-        "text": "Showing results for " + userObj.reservationObject.location + userObj.reservationObject.locationState + " for "+userObj.reservationObject.adults + " Adults with Check In on " + convertDateFormat(userObj.reservationObject.datetime) + " (For " + userObj.reservationObject.nights + " Nights).",
+        "text": "Showing results for " + userObj.reservationObject.location + userObj.state + " for "+userObj.reservationObject.adults + " Adults with Check In on " + convertDateFormat(userObj.reservationObject.datetime) + " (For " + userObj.reservationObject.nights + " Nights).",
         "buttons": [
           {
             "type": "postback",

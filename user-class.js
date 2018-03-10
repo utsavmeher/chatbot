@@ -13,6 +13,7 @@
         this.tempQuestion = '';
         this.tempStore = '';
         this.city = '';
+        this.state = '';
         this.changeSearchFlag = false;
         this.sorryCount = 0;
     }
