@@ -123,6 +123,7 @@ function handleMessage(event, userObj) {
       console.log('Wit Response');
       console.log(entities);
       if (entities.location && entities.number && entities.number[0] && entities.number[1] && entities.datetime) {
+        userObj.reservationObject = {};
         userObj.reservationObject["location"] = entities.location[0].value;
         userObj.reservationObject["adults"] = entities.number[0].value;
         userObj.reservationObject["nights"] = entities.number[1].value;

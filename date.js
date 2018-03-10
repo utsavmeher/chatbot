@@ -33,7 +33,6 @@ getDateQuickReplies: function(userObj) {
 },
   
 getCheckInCheckOut: function(userObj) {
-  console.log("Arrival date inside formattor: " + userObj.reservationObject.datetime);
   var checkInDate = new Date(userObj.reservationObject.datetime);
   var checkOutDate = new Date(userObj.reservationObject.datetime);
   checkInDate.setDate(checkInDate.getDate()+1);
