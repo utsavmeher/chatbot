@@ -384,7 +384,7 @@ function getShowResults(userObj) {
   return response;
 }
 
-// Se
+// Send a template to start over and message a live agent
 function getSorryExcedeed(userObj) {
   console.log("getSorryExcedeed started");
   let response = {
