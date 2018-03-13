@@ -177,7 +177,7 @@ function handleMessage(event, userObj) {
             console.log('tempQuestion = EMPTY');
           }
         } else {
-          if(userObj.sorryCount < 1){
+          if(userObj.sorryCount < 2){
             response = { "text": CONFIG.keyMapped['sorry'] };
             userObj.sorryCount++;
           } else {
@@ -306,7 +306,7 @@ function getStartingIntro(userObj) {
 //Get the Available hotel List
 function getHotelListFromText(userObj) {
   let response = {};
-  console.log("getHotelListFromText method");
+  console.log("getHotelListFromText method Service Call ###############################################");
   console.log(userObj.reservationObject.city + ' ' + userObj.reservationObject.startdate + ' ' + userObj.reservationObject.enddate + ' ' + userObj.reservationObject.adults);
   request({
     "uri": "https://aa0318c4.ngrok.io/property/hotels",
