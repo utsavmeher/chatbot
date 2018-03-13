@@ -6,6 +6,8 @@ var CONFIG = require('./mappedkey.js');
 module.exports = {
 // Sends Date Quick Reples via the Send API
 getDateQuickReplies: function(userObj) {
+  console.log('getDateQuickReplies location and state is:');
+  console.log(userObj.reservationObject.locationState + userObj.reservationObject.location);
   userObj.reservationObject.locationState = userObj.reservationObject.locationState ? userObj.reservationObject.locationState : "";
   userObj.reservationObject.location = userObj.reservationObject.location ? userObj.reservationObject.location: "";
   let response = {

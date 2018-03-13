@@ -54,6 +54,7 @@ getUserCityFromUserInput: function(userObj, location) {
         }
       }
       userObj.reservationObject["city"] = userObj.reservationObject.location?userObj.reservationObject.location:userObj.reservationObject.locationState;
+      userObj.reservationObject["city"] = userObj.reservationObject["city"]?userObj.reservationObject["city"]:location;
       userObj.tempQuestion = 'getDate';
       let response = date.getDateQuickReplies(userObj);
       service.callSendAPI(userObj.userId, response);
