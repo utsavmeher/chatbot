@@ -125,6 +125,7 @@ function handleMessage(event, userObj) {
       if (entities.location && entities.number && entities.number[0] && entities.number[1] && entities.datetime) {
         userObj.reservationObject = {};
         userObj.reservationObject["city"] = entities.location[0].value;
+        userObj.reservationObject["location"] = entities.location[0].value;
         userObj.reservationObject["adults"] = entities.number[0].value;
         userObj.reservationObject["nights"] = entities.number[1].value;
         userObj.reservationObject["datetime"] = entities.datetime[0].value;
@@ -361,6 +362,8 @@ function getHotelListFromText(userObj) {
 
 // get the show results message
 function getShowResults(userObj) {
+  userObj.reservationObject.location = userObj.reservationObject.location?userObj.reservationObject.location:'';
+  userObj.reservationObject.locationState = userObj.reservationObject.locationState?userObj.reservationObject.locationState:'';
   let response = {
     "attachment": {
       "type": "template",
