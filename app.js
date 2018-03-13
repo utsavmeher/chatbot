@@ -124,7 +124,7 @@ function handleMessage(event, userObj) {
       console.log(entities);
       if (entities.location && entities.number && entities.number[0] && entities.number[1] && entities.datetime) {
         userObj.reservationObject = {};
-        userObj.reservationObject["location"] = entities.location[0].value;
+        userObj.reservationObject["city"] = entities.location[0].value;
         userObj.reservationObject["adults"] = entities.number[0].value;
         userObj.reservationObject["nights"] = entities.number[1].value;
         userObj.reservationObject["datetime"] = entities.datetime[0].value;
@@ -308,7 +308,7 @@ function getHotelListFromText(userObj) {
   console.log("getHotelListFromText method");
   console.log(userObj.reservationObject.city + ' ' + userObj.reservationObject.startdate + ' ' + userObj.reservationObject.enddate + ' ' + userObj.reservationObject.adults);
   request({
-    "uri": "https://691f1bf7.ngrok.io/property/hotels",
+    "uri": "https://aa0318c4.ngrok.io/property/hotels",
     "qs": { "city": userObj.reservationObject.city, "startdate": userObj.reservationObject.startdate, "enddate": userObj.reservationObject.enddate, "numberOfAdults": userObj.reservationObject.adults, "localeCode": "en" },
     "method": "GET"
   }, (err, res, body) => {
