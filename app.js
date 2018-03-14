@@ -54,6 +54,7 @@ app.post('/webhook', function (req, res) {
       pageEntry.messaging.forEach(function (messagingEvent) {
         console.log("Inside Page Entry, User ID: " + messagingEvent.sender.id);
         var userId =  messagingEvent.sender.id;
+        console.log("userId: " + userId);
         var userObj = _.findWhere(activeUsers, {
                 userId: userId.toString()
             });
@@ -63,7 +64,7 @@ app.post('/webhook', function (req, res) {
            request({ url: 'https://graph.facebook.com/v2.11/' + userId,
                 qs: { access_token: PAGE_ACCESS_TOKEN },
                 method: 'GET',
-                json: { fields: "first_name,last_name" }
+                json: { fields: "name" }
             }, function(error, userData, body) {
                 if (error) {
                     console.log('Error getting User Profile: ', error)
