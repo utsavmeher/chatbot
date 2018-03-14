@@ -326,7 +326,7 @@ function getHotelListFromText(userObj) {
   console.log("getHotelListFromText method Service Call ###############################################");
   console.log(userObj.reservationObject.city + ' ' + userObj.reservationObject.startdate + ' ' + userObj.reservationObject.enddate + ' ' + userObj.reservationObject.adults);
   request({
-    "uri": "https://2855401d.ngrok.io/property/hotels",
+    "uri": "https://59f601af.ngrok.io/property/hotels",
     "qs": { "city": userObj.reservationObject.city, "startdate": userObj.reservationObject.startdate, "enddate": userObj.reservationObject.enddate, "numberOfAdults": userObj.reservationObject.adults, "localeCode": "en" },
     "method": "GET"
   }, (err, res, body) => {
