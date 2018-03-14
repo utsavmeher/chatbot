@@ -43,7 +43,7 @@ getCheckInCheckOut: function(userObj) {
   checkInDate.setDate(checkInDate.getDate()+1);
   checkOutDate.setDate(checkInDate.getDate() + userObj.reservationObject.nights);
   var checkInDD = checkInDate.getDate();
-  var checkInMM = checkInDate.getMonth() + 1;
+  var checkInMM = checkInDate.getMonth();
   if (checkInDD < 10) {
     checkInDD = "0" + checkInDD;
   }
@@ -52,7 +52,7 @@ getCheckInCheckOut: function(userObj) {
   }
   var checkInYY = checkInDate.getFullYear();
   var checkOutDD = checkOutDate.getDate();
-  var checkOutMM = checkOutDate.getMonth() + 1;
+  var checkOutMM = checkOutDate.getMonth();
   if (checkOutDD < 10) {
     checkOutDD = "0" + checkOutDD;
   }
