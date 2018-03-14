@@ -69,7 +69,20 @@ app.post('/webhook', function (req, res) {
                 if (error) {
                     console.log('Error getting User Profile: ', error)
                 } else if (userData.body.error) {
-                    console.log('Error getting User Profile: ', userData.body.error)
+                    console.log('Error getting User Data: ', userData.body.error);
+                    console.log('Need to remove');
+                    var userObj = new User(userId, userData.body);
+                    activeUsers.push(_.clone(userObj));
+                    console.log("Active Users:");
+                    console.log(activeUsers);
+                      if (messagingEvent.message) {
+                        handleMessage(messagingEvent, userObj);
+                      } else if (messagingEvent.postback) {
+                        handlePostback(messagingEvent, userObj);
+                      } else {
+                        console.log("Webhook received unknown messagingEvent:", messagingEvent);
+                      }
+                  console.log('Need to remove');
                 } else {
                     var userObj = new User(userId, userData.body);
                     activeUsers.push(_.clone(userObj));
@@ -145,6 +158,7 @@ function handleMessage(event, userObj) {
         console.log(userObj);
         console.log('changeSearchFlag: ' + userObj.changeSearchFlag);
         if (greetings && greetings.confidence > 0.9) {
+          userObj.profile.first_name=userObj.profile.first_name?userObj.profile.first_name:"";
           response = { "text": "Hello " + userObj.profile.first_name + ", " + CONFIG.keyMapped['welcome'] + ' ' + CONFIG.keyMapped['location'] };
           userObj.tempQuestion = 'getLocation';
           console.log('tempQuestion = getLocation');
@@ -230,6 +244,7 @@ function callSendAPILocation(userObj, response, endpoint, method) {
   method = method || 'POST';
   if (userObj.changeSearchFlag) {
     console.log('change_search - in callSendAPILocation');
+    userObj.profile.first_name=userObj.profile.first_name?userObj.profile.first_name:"";
     response = {
       "text": "Previous Search summary: " + userObj.reservationObject.location + " "+ userObj.reservationObject.locationState+ " for " + userObj.reservationObject.adults + " Adults with Check In on " + convertDateFormat(userObj.reservationObject.datetime) + " (For " + userObj.reservationObject.nights + " Nights).\nFor New Search - Please name a city " + userObj.profile.first_name + ".",
       "quick_replies": [
@@ -274,6 +289,7 @@ function callSendAPILocation(userObj, response, endpoint, method) {
 
 // Get the first name and Shows the First Greeting Msg to the User
 function getStartingIntro(userObj) {
+  userObj.profile.first_name=userObj.profile.first_name?userObj.profile.first_name:"";
     let response = {
         "attachment": {
           "type": "template",
