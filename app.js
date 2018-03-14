@@ -53,7 +53,6 @@ app.post('/webhook', function (req, res) {
     data.entry.forEach(function (pageEntry) {
       pageEntry.messaging.forEach(function (messagingEvent) {
         console.log("Inside Page Entry, User ID: " + messagingEvent.sender.id);
-        console.log("userId: " + userId);
         var userId =  messagingEvent.sender.id;
         var userObj = _.findWhere(activeUsers, {
                 userId: userId.toString()
