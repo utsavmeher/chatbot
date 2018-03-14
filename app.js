@@ -63,7 +63,7 @@ app.post('/webhook', function (req, res) {
            request({ url: 'https://graph.facebook.com/v2.11/' + userId,
                 qs: { access_token: PAGE_ACCESS_TOKEN },
                 method: 'GET',
-                json: { fields: "first_name,last_name,profile_pic,locale,timezone,gender" }
+                json: { fields: "first_name,last_name,gender" }
             }, function(error, userData, body) {
                 if (error) {
                     console.log('Error getting User Profile: ', error)
