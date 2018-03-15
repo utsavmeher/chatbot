@@ -13,7 +13,6 @@
         this.tempQuestion = '';
         this.tempStore = '';
         this.changeSearchFlag = false;
-        this.sorryCount = 0;
     }
     module.exports = User;
 }());

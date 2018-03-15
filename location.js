@@ -44,6 +44,7 @@ getUserCityFromUserInput: function(userObj, location) {
   }, (err, res, body) => {
     if (!err) {
       console.log('getUserCityFromUserInput response');
+      console.log(body);
       var body = JSON.parse(body);
       for (let i = 0; i < body.results[0].address_components.length; i++) {
         if(body.results[0].address_components[i].types[0] == "locality"){
