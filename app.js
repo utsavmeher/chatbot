@@ -161,7 +161,7 @@ function handleMessage(event, userObj) {
           response = { "text": "Hello " + userObj.profile.first_name + ", " + CONFIG.keyMapped['welcome'] + ' ' + CONFIG.keyMapped['location'] };
           userObj.tempQuestion = 'getLocation';
           console.log('tempQuestion = getLocation');
-        } else if (userObj.tempQuestion == 'getLocation' && location && location.confidence > 0.8) {
+        } else if (userObj.tempQuestion == 'getLocation' && location && location.confidence > 0.9) {
           userObj.reservationObject = {};
           console.log('Inside location');
           locationService.getUserCityFromUserInput(userObj, location.value);
