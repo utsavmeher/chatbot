@@ -339,11 +339,16 @@ function getHotelListFromText(userObj) {
         hotelListToShow[i]["subtitle"] = hotelList[i].hotelName;
         hotelListToShow[i]["image_url"] = hotelList[i].hotelImageURL;
         let button = {};
+        let button1 = {};
         button["type"] = "web_url";
         button["url"] = hotelList[i].hotelRedirectedURL;
         button["title"] = "Select Room";
+        button1["type"] = "web_url";
+        button1["url"] = hotelList[i].hotelRedirectedURL;
+        button1["title"] = "Select Room";
         hotelListToShow[i]['buttons'] = [];
         hotelListToShow[i]['buttons'].push(button);
+        hotelListToShow[i]['buttons'].push(button1);
       }
       console.log(JSON.stringify(hotelListToShow));
       console.log(hotelListToShow[0].buttons);
