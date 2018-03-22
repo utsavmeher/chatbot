@@ -336,6 +336,7 @@ function getHotelListFromText(userObj) {
       }
       getArrivalDepartureDate(userObj);
       for (var i = 0; i < hotelSize; i++) {
+        console.log(hotelList[i]);
         hotelListToShow[i] = {};
         hotelListToShow[i]["title"] = hotelList[i].hotelName;
         hotelListToShow[i]["subtitle"] = hotelList[i].hotelName;
@@ -403,8 +404,8 @@ function getArrivalDepartureDate(userObj) {
   checkOutDate = checkOutDD + '/' + checkOutMM + '/' + checkOutYY;
   userObj.reservationObject['arrivalDate'] = checkInDate;
   userObj.reservationObject['departureDate'] = checkOutDate;
-  console.log("Check In Date : " + checkInDate);
-  console.log("Check Out Date : " + checkOutDate);
+  console.log("arrivalDate Date : " + checkInDate);
+  console.log("departureDate Date : " + checkOutDate);
  }
 
 // get the show results message
