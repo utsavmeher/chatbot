@@ -318,11 +318,12 @@ function getHotelListFromText(userObj) {
   console.log("getHotelListFromText method Service Call ###############################################");
   console.log(userObj.reservationObject.city + ' ' + userObj.reservationObject.startdate + ' ' + userObj.reservationObject.enddate + ' ' + userObj.reservationObject.adults);
   request({
-    "uri": "https://78a879f5.ngrok.io/property/hotels",
+    "uri": "https://73476875.ngrok.io/property/hotels",
     "qs": { "city": userObj.reservationObject.city, "startdate": userObj.reservationObject.startdate, "enddate": userObj.reservationObject.enddate, "numberOfAdults": userObj.reservationObject.adults, "localeCode": "en" },
     "method": "GET"
   }, (err, res, body) => {
     if (!err && res.statusCode == 200) {
+      let liveChatUrl='https://www.ihg.com/hotels/us/en/reservation/searchresult/chatFrameSet?';
       console.log('getHotelListFromText response');
       let hotelList = [];
       hotelList = JSON.parse(body);
@@ -344,7 +345,7 @@ function getHotelListFromText(userObj) {
         button["url"] = hotelList[i].hotelRedirectedURL;
         button["title"] = "Select Room";
         button1["type"] = "web_url";
-        button1["url"] = hotelList[i].hotelRedirectedURL;
+        button1["url"] = liveChatUrl+hotelList[i].hotelRedirectedURL;
         button1["title"] = "Live Chat";
         hotelListToShow[i]['buttons'] = [];
         hotelListToShow[i]['buttons'].push(button);
