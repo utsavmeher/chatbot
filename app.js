@@ -323,7 +323,7 @@ function getHotelListFromText(userObj) {
     "method": "GET"
   }, (err, res, body) => {
     if (!err && res.statusCode == 200) {
-      let liveChatUrl='https://www.ihg.com/hotels/us/en/reservation/searchresult/chatFrameSet?';
+      let liveChatUrl='https://www.ihg.com/hotels/us/en/reservation/searchresult/chatFrameSet?vaSubject=reservations&language=en&siteLanguage=en&isJSEnabled=1';
       console.log('getHotelListFromText response');
       let hotelList = [];
       hotelList = JSON.parse(body);
@@ -345,7 +345,7 @@ function getHotelListFromText(userObj) {
         button["url"] = hotelList[i].hotelRedirectedURL;
         button["title"] = "Select Room";
         button1["type"] = "web_url";
-        button1["url"] = liveChatUrl+hotelList[i].hotelRedirectedURL;
+        button1["url"] = liveChatUrl +'&adultRoomNights=' + userObj.reservationObject.adults + '&roomNights=' + userObj.reservationObject.nights + '&destination=' + 'Atlanta, GA, United States' + '&hotelCityStateCountryCode=' + 'Atlanta, GA, United States' ;
         button1["title"] = "Live Chat";
         hotelListToShow[i]['buttons'] = [];
         hotelListToShow[i]['buttons'].push(button);
