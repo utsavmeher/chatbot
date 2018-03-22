@@ -345,7 +345,7 @@ function getHotelListFromText(userObj) {
         button["title"] = "Select Room";
         button1["type"] = "web_url";
         button1["url"] = hotelList[i].hotelRedirectedURL;
-        button1["title"] = "Select Room";
+        button1["title"] = "Live Chat";
         hotelListToShow[i]['buttons'] = [];
         hotelListToShow[i]['buttons'].push(button);
         hotelListToShow[i]['buttons'].push(button1);
