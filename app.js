@@ -334,6 +334,7 @@ function getHotelListFromText(userObj) {
       if (hotelList.length > 10) {
         hotelSize = 10;
       }
+      getArrivalDepartureDate(userObj);
       for (var i = 0; i < hotelSize; i++) {
         hotelListToShow[i] = {};
         hotelListToShow[i]["title"] = hotelList[i].hotelName;
@@ -345,7 +346,7 @@ function getHotelListFromText(userObj) {
         button["url"] = hotelList[i].hotelRedirectedURL;
         button["title"] = "Select Room";
         button1["type"] = "web_url";
-        button1["url"] = liveChatUrl +'&adultRoomNights=' + userObj.reservationObject.adults + '&roomNights=' + userObj.reservationObject.nights + '&destination=' + 'Atlanta, GA, United States' + '&hotelCityStateCountryCode=' + 'Atlanta, GA, United States' ;
+        button1["url"] = liveChatUrl + '&arrivalDate='+ userObj.reservationObject.arrivalDate + '&departureDate='+ userObj.reservationObject.departureDate +'&adultRoomNights=' + userObj.reservationObject.adults + '&roomNights=' + userObj.reservationObject.nights + '&destination=' + 'Atlanta, GA, United States' + '&hotelCityStateCountryCode=' + 'Atlanta, GA, United States' ;
         button1["title"] = "Live Chat";
         hotelListToShow[i]['buttons'] = [];
         hotelListToShow[i]['buttons'].push(button);
@@ -374,6 +375,37 @@ function getHotelListFromText(userObj) {
     }
   });
 }
+
+function getArrivalDepartureDate(userObj) {
+  var checkInDate = new Date(userObj.reservationObject.datetime);
+  var checkOutDate = new Date(userObj.reservationObject.datetime);
+  checkInDate.setDate(checkInDate.getDate()+1);
+  checkOutDate.setDate(checkInDate.getDate() + userObj.reservationObject.nights);
+  var checkInDD = checkInDate.getDate();
+  var checkInMM = checkInDate.getMonth();
+  if (checkInDD < 10) {
+    checkInDD = "0" + checkInDD;
+  }
+  if (checkInMM < 10) {
+    checkInMM = "0" + checkInMM;
+  }
+  var checkInYY = checkInDate.getFullYear();
+  var checkOutDD = checkOutDate.getDate();
+  var checkOutMM = checkOutDate.getMonth();
+  if (checkOutDD < 10) {
+    checkOutDD = "0" + checkOutDD;
+  }
+  if (checkOutMM < 10) {
+    checkOutMM = "0" + checkOutMM;
+  }
+  var checkOutYY = checkOutDate.getFullYear();
+  checkInDate = checkInDD + '/' + checkInMM + '/' + checkInYY;
+  checkOutDate = checkOutDD + '/' + checkOutMM + '/' + checkOutYY;
+  userObj.reservationObject['arrivalDate'] = checkInDate;
+  userObj.reservationObject['departureDate'] = checkOutDate;
+  console.log("Check In Date : " + checkInDate);
+  console.log("Check Out Date : " + checkOutDate);
+ }
 
 // get the show results message
 function getShowResults(userObj) {
